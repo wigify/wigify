@@ -3,31 +3,48 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "build-mac": "tsc && vite build && electron-builder --mac --universal",
+    "build-mac:local": "tsc && vite build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "pre-commit": "bun lint && bun test && bun format"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitest/coverage-v8": "^2.0.0",
+    "electron": "^30.0.1",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "happy-dom": "^15.0.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.5",
+    "tailwindcss": "^4.0.0",
     "typescript": "^5.2.2",
     "vite": "^5.1.6",
-    "electron": "^30.0.1",
-    "electron-builder": "^24.13.3",
     "vite-plugin-electron": "^0.28.6",
-    "vite-plugin-electron-renderer": "^0.14.5"
-  },
-  "main": "dist-electron/main.js"
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "vitest": "^2.0.0"
+  }
 }

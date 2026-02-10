@@ -34,6 +34,7 @@ Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config),
 - **Electron**: Main process (`src/main/`), renderer (`src/renderer/`), preload (`src/preload/`)
 - **IPC**: Use `ipcMain.on` (main) / `ipcRenderer.send` (renderer) for process communication
 - **State**: Local hooks (`useState`, custom hooks in `src/renderer/hooks/`) - no global state library
+- **Windows**: Use the `Window` class from `src/main/lib/window.ts` for all window creation. It provides consistent styling, macOS vibrancy, and platform-specific defaults. Use `createWindow()` helper or instantiate `new Window(config)` directly.
 
 ## Performance & Design
 
