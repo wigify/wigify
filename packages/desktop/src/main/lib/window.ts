@@ -2,7 +2,7 @@ import { BrowserWindow, app } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { WindowConfig, WindowData } from '@/types';
+import type { WindowConfig, WindowData } from '@wigify/types';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.join(__dirname, '../..');

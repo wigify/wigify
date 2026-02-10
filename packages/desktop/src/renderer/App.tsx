@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import type { WindowData } from '@/types/window';
+import type { WindowData } from '@wigify/types';
+import '@wigify/types';
 
 const MainWindow = lazy(() => import('./windows/main-window'));
 

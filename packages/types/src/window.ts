@@ -1,28 +1,28 @@
-import type { BrowserWindowConstructorOptions } from 'electron';
+import type { BrowserWindowConstructorOptions } from "electron";
 
-export type WindowType = 'main';
+export type WindowType = "main";
 
 export type VibrancyMaterial =
-  | 'titlebar'
-  | 'selection'
-  | 'menu'
-  | 'popover'
-  | 'sidebar'
-  | 'header'
-  | 'sheet'
-  | 'window'
-  | 'hud'
-  | 'fullscreen-ui'
-  | 'tooltip'
-  | 'content'
-  | 'under-window'
-  | 'under-page';
+  | "titlebar"
+  | "selection"
+  | "menu"
+  | "popover"
+  | "sidebar"
+  | "header"
+  | "sheet"
+  | "window"
+  | "hud"
+  | "fullscreen-ui"
+  | "tooltip"
+  | "content"
+  | "under-window"
+  | "under-page";
 
 export type TitleBarStyle =
-  | 'default'
-  | 'hidden'
-  | 'hiddenInset'
-  | 'customButtonsOnHover';
+  | "default"
+  | "hidden"
+  | "hiddenInset"
+  | "customButtonsOnHover";
 
 export interface WindowConfig {
   type: WindowType;
@@ -49,7 +49,7 @@ export interface WindowConfig {
   frame?: boolean;
   transparent?: boolean;
   vibrancy?: VibrancyMaterial;
-  visualEffectState?: 'followWindow' | 'active' | 'inactive';
+  visualEffectState?: "followWindow" | "active" | "inactive";
   titleBarStyle?: TitleBarStyle;
   titleBarOverlay?:
     | boolean

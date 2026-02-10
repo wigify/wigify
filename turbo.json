@@ -1,0 +1,38 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "dist-electron/**"]
+    },
+    "build-mac": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "dist-electron/**", "release/**"]
+    },
+    "build-mac:local": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "dist-electron/**", "release/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "coverage": {
+      "dependsOn": ["^build"]
+    },
+    "format": {},
+    "typecheck": {
+      "dependsOn": ["^build"]
+    }
+  }
+}

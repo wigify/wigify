@@ -1,4 +1,4 @@
-import type { IpcRendererEvent } from 'electron';
+import type { IpcRendererEvent } from "electron";
 
 type IpcCallback = (event: IpcRendererEvent, ...args: unknown[]) => void;
 
@@ -13,4 +13,4 @@ declare global {
   }
 }
 
-export {};
+export type { IpcCallback };
