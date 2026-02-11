@@ -1,10 +1,15 @@
 import { app, BrowserWindow } from 'electron';
 
+import { registerWidgetIpc } from './ipc/widget';
 import { createWindow, Window } from './lib/window';
+import { ensureConfigDirectories } from './services/widget-fs';
 
 export let mainWindow: Window | null = null;
 
 async function initializeApp(): Promise<void> {
+  await ensureConfigDirectories();
+  registerWidgetIpc();
+
   mainWindow = await createWindow({
     type: 'main',
     width: 800,

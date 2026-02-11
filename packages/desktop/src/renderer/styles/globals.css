@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme inline {
   --color-glassy: var(--glassy);
@@ -101,11 +101,6 @@
     @apply border-border;
   }
 
-  html,
-  body {
-    background-color: transparent !important;
-  }
-
   body {
     @apply text-foreground;
     font-family:
@@ -113,7 +108,7 @@
       system-ui,
       -apple-system,
       BlinkMacSystemFont,
-      "Segoe UI",
+      'Segoe UI',
       Roboto,
       sans-serif;
     font-synthesis: none;

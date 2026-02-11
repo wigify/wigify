@@ -19,11 +19,6 @@ wigify/
 │   │   │   ├── preload/    # Preload scripts
 │   │   │   └── renderer/   # React renderer
 │   │   └── tests/
-│   ├── ui/           # @wigify/ui - Shared React components
-│   │   └── src/
-│   │       ├── components/ui/
-│   │       ├── lib/
-│   │       └── styles/
 │   ├── types/        # @wigify/types - Shared TypeScript types
 │   │   └── src/
 │   └── config/       # @wigify/config - Shared ESLint, Prettier, TSConfig
@@ -33,8 +28,7 @@ wigify/
 
 ### Package Dependencies
 
-- `@wigify/desktop` depends on `@wigify/ui` and `@wigify/types`
-- `@wigify/ui` is standalone (shared components)
+- `@wigify/desktop` depends on `@wigify/types`
 - `@wigify/types` is standalone (shared types)
 
 ### Workspace Commands
@@ -75,7 +69,6 @@ Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config),
 
 - **Monorepo**: Turborepo with Bun workspaces
 - **Desktop App**: `packages/desktop/` - Electron main process, preload, and React renderer
-- **Shared UI**: `packages/ui/` - Reusable React components, import with `import { Button } from '@wigify/ui'`
 - **Shared Types**: `packages/types/` - TypeScript types, import with `import type { WindowConfig } from '@wigify/types'`
 - **IPC**: Use `ipcMain.on` (main) / `ipcRenderer.send` (renderer) for process communication
 - **State**: Local hooks (`useState`, custom hooks in `packages/desktop/src/renderer/hooks/`) - no global state library

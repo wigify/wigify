@@ -1,6 +1,6 @@
 import type { BrowserWindowConstructorOptions } from "electron";
 
-export type WindowType = "main";
+export type WindowType = "main" | "widget";
 
 export type VibrancyMaterial =
   | "titlebar"
@@ -54,6 +54,7 @@ export interface WindowConfig {
   titleBarOverlay?:
     | boolean
     | { color?: string; symbolColor?: string; height?: number };
+  trafficLightPosition?: { x: number; y: number };
   hasShadow?: boolean;
   backgroundColor?: string;
   electronOptions?: Partial<BrowserWindowConstructorOptions>;

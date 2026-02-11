@@ -1,0 +1,130 @@
+import type {
+  WidgetInstance,
+  WidgetWindowPayload,
+  WindowData,
+} from '@wigify/types';
+
+import { createWindow, Window } from '../lib/window';
+
+import { getWidgetBundlePath, readWidgetManifest } from './widget-fs';
+
+const widgetWindows = new Map<string, Window>();
+
+export async function spawnWidgetWindow(
+  instance: WidgetInstance,
+): Promise<Window | null> {
+  if (widgetWindows.has(instance.id)) {
+    const existingWindow = widgetWindows.get(instance.id);
+    if (existingWindow && !existingWindow.isDestroyed()) {
+      existingWindow.focus();
+      return existingWindow;
+    }
+  }
+
+  const manifest = await readWidgetManifest(instance.widgetName);
+  if (!manifest) {
+    return null;
+  }
+
+  const bundlePath = await getWidgetBundlePath(instance.widgetName);
+
+  const payload: WidgetWindowPayload = {
+    instanceId: instance.id,
+    widgetName: instance.widgetName,
+    bundlePath,
+    variables: instance.variables,
+    size: instance.size,
+  };
+
+  const windowData: WindowData = {
+    type: 'widget',
+    payload,
+  };
+
+  const window = await createWindow({
+    type: 'widget',
+    width: instance.size.width,
+    height: instance.size.height,
+    x: instance.position.x,
+    y: instance.position.y,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    resizable: manifest.resizable ?? false,
+    minimizable: false,
+    maximizable: false,
+    hasShadow: false,
+    show: true,
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: -100, y: -100 },
+  });
+
+  window.getBrowserWindow().webContents.send('load', windowData);
+
+  window.on('closed', () => {
+    widgetWindows.delete(instance.id);
+  });
+
+  window.on('moved', () => {
+    const bounds = window.getBounds();
+    window
+      .getBrowserWindow()
+      .webContents.send('widget:position-changed', instance.id, {
+        x: bounds.x,
+        y: bounds.y,
+      });
+  });
+
+  widgetWindows.set(instance.id, window);
+  return window;
+}
+
+export function closeWidgetWindow(instanceId: string): void {
+  const window = widgetWindows.get(instanceId);
+  if (window && !window.isDestroyed()) {
+    window.close();
+  }
+  widgetWindows.delete(instanceId);
+}
+
+export function getWidgetWindow(instanceId: string): Window | undefined {
+  return widgetWindows.get(instanceId);
+}
+
+export function getAllWidgetWindows(): Map<string, Window> {
+  return widgetWindows;
+}
+
+export function closeAllWidgetWindows(): void {
+  for (const [instanceId, window] of widgetWindows) {
+    if (!window.isDestroyed()) {
+      window.close();
+    }
+    widgetWindows.delete(instanceId);
+  }
+}
+
+export function updateWidgetWindowPosition(
+  instanceId: string,
+  x: number,
+  y: number,
+): void {
+  const window = widgetWindows.get(instanceId);
+  if (window && !window.isDestroyed()) {
+    const bounds = window.getBounds();
+    window.setBounds({ x, y, width: bounds.width, height: bounds.height });
+  }
+}
+
+export function updateWidgetWindowSize(
+  instanceId: string,
+  width: number,
+  height: number,
+): void {
+  const window = widgetWindows.get(instanceId);
+  if (window && !window.isDestroyed()) {
+    const bounds = window.getBounds();
+    window.setBounds({ x: bounds.x, y: bounds.y, width, height });
+  }
+}

@@ -28,11 +28,11 @@ const DEFAULT_CONFIG: Partial<WindowConfig> = {
 };
 
 const MACOS_GLASSY_CONFIG: Partial<WindowConfig> = {
-  vibrancy: 'hud',
-  visualEffectState: 'active',
   titleBarStyle: 'hiddenInset',
-  transparent: false,
-  backgroundColor: '#00000000',
+  // transparent: false,
+  // vibrancy: 'hud',
+  // visualEffectState: 'active',
+  // backgroundColor: '#00000000',
 };
 
 export class Window {
@@ -72,10 +72,11 @@ export class Window {
       visualEffectState: mergedConfig.visualEffectState,
       titleBarStyle: mergedConfig.titleBarStyle,
       titleBarOverlay: mergedConfig.titleBarOverlay,
+      trafficLightPosition: mergedConfig.trafficLightPosition,
       hasShadow: mergedConfig.hasShadow,
       backgroundColor: mergedConfig.backgroundColor,
       webPreferences: {
-        preload: path.join(__dirname, '../preload.mjs'),
+        preload: path.join(__dirname, 'preload.mjs'),
         contextIsolation: true,
         nodeIntegration: false,
       },
@@ -86,7 +87,7 @@ export class Window {
   }
 
   private getPlatformConfig(): Partial<WindowConfig> {
-    if (process.platform === 'darwin') {
+    if (process.platform === 'darwin' && this.config.type !== 'widget') {
       return MACOS_GLASSY_CONFIG;
     }
 

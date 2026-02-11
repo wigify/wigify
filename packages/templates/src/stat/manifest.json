@@ -1,0 +1,13 @@
+{
+  "name": "stat",
+  "version": "1.0.0",
+  "title": "Stat Widget",
+  "description": "A styled widget for displaying a single statistic with a label",
+  "author": "Wigify",
+  "size": {
+    "width": 180,
+    "height": 120
+  },
+  "resizable": true,
+  "variables": []
+}
