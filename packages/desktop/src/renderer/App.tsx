@@ -1,9 +1,8 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 
-import type { WidgetWindowPayload, WindowData } from '@wigify/types';
+import type { WindowData } from '@wigify/types';
 
 const MainWindow = lazy(() => import('./windows/main'));
-const WidgetWindow = lazy(() => import('./windows/widget-window'));
 
 function LoadingScreen() {
   return (
@@ -61,9 +60,6 @@ export default function App() {
   return (
     <Suspense fallback={<LoadingScreen />}>
       {windowData.type === 'main' && <MainWindow />}
-      {windowData.type === 'widget' && (
-        <WidgetWindow payload={windowData.payload as WidgetWindowPayload} />
-      )}
     </Suspense>
   );
 }

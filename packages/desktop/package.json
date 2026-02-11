@@ -17,11 +17,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@babel/standalone": "^7.29.1",
     "@monaco-editor/react": "^4.7.0",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.4",
-    "@wigify/api": "workspace:*",
     "@wigify/templates": "workspace:*",
     "@wigify/types": "workspace:*",
     "class-variance-authority": "^0.7.1",

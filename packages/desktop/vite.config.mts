@@ -26,6 +26,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
+        widget: path.resolve(__dirname, 'widget.html'),
       },
     },
   },

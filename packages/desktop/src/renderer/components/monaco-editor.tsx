@@ -19,21 +19,16 @@ interface MonacoEditorProps {
   className?: string;
 }
 
-function configureJavaScript(monaco: Monaco): void {
-  const { javascriptDefaults } = monaco.languages.typescript;
-
-  javascriptDefaults.setCompilerOptions({
-    target: 99,
-    module: 99,
-    jsx: 2,
-    allowNonTsExtensions: true,
-    allowJs: true,
-    checkJs: false,
-  });
-
-  javascriptDefaults.setDiagnosticsOptions({
-    noSemanticValidation: true,
-    noSyntaxValidation: false,
+function configureHtml(monaco: Monaco): void {
+  monaco.languages.html?.htmlDefaults?.setOptions?.({
+    format: {
+      tabSize: 2,
+      insertSpaces: true,
+      wrapLineLength: 80,
+    },
+    suggest: {
+      html5: true,
+    },
   });
 }
 
@@ -156,7 +151,7 @@ export default function MonacoEditor({
     (editorInstance, monaco) => {
       editorRef.current = editorInstance;
       monacoRef.current = monaco;
-      configureJavaScript(monaco);
+      configureHtml(monaco);
       configureEditor(editorInstance);
       defineThemes(monaco);
 
@@ -178,8 +173,8 @@ export default function MonacoEditor({
   return (
     <Editor
       className={className}
-      defaultLanguage="javascript"
-      defaultPath="file:///widget.jsx"
+      defaultLanguage="html"
+      defaultPath="file:///widget.html"
       value={value}
       onChange={handleChange}
       onMount={handleMount}

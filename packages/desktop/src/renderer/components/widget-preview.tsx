@@ -1,30 +1,28 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import * as React from 'react';
-import { compileWidgetSource } from '../lib/widget-runtime';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface WidgetPreviewProps {
   code: string;
   className?: string;
 }
 
-interface PreviewState {
-  component: React.ComponentType | null;
-  error: string | null;
-}
-
 const DEBOUNCE_MS = 300;
 
-export default function WidgetPreview({ code, className }: WidgetPreviewProps) {
-  const [state, setState] = useState<PreviewState>({
-    component: null,
-    error: null,
-  });
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+function buildSrcdoc(source: string): string {
+  return `<!doctype html>
+<html>
+<head>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
+</style>
+</head>
+<body>${source}</body>
+</html>`;
+}
 
-  const transpileAndExecute = useCallback((sourceCode: string) => {
-    const result = compileWidgetSource(sourceCode);
-    setState(result);
-  }, []);
+export default function WidgetPreview({ code, className }: WidgetPreviewProps) {
+  const [srcdoc, setSrcdoc] = useState('');
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (debounceRef.current) {
@@ -32,7 +30,7 @@ export default function WidgetPreview({ code, className }: WidgetPreviewProps) {
     }
 
     debounceRef.current = setTimeout(() => {
-      transpileAndExecute(code);
+      setSrcdoc(buildSrcdoc(code));
     }, DEBOUNCE_MS);
 
     return () => {
@@ -40,87 +38,18 @@ export default function WidgetPreview({ code, className }: WidgetPreviewProps) {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [code, transpileAndExecute]);
+  }, [code]);
 
-  const renderedWidget = useMemo(() => {
-    if (state.error) {
-      return (
-        <div className="flex h-full w-full items-center justify-center p-3">
-          <span className="text-destructive text-center text-xs">
-            {state.error}
-          </span>
-        </div>
-      );
-    }
-
-    if (!state.component) {
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <span className="text-muted-foreground text-xs">Loading...</span>
-        </div>
-      );
-    }
-
-    try {
-      const Component = state.component;
-      return <Component />;
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Render error occurred';
-      return (
-        <div className="flex h-full w-full items-center justify-center p-3">
-          <span className="text-destructive text-center text-xs">
-            {errorMessage}
-          </span>
-        </div>
-      );
-    }
-  }, [state]);
+  const sandboxAttr = useMemo(() => 'allow-scripts', []);
 
   return (
     <div className={className}>
-      <ErrorBoundary>{renderedWidget}</ErrorBoundary>
+      <iframe
+        srcDoc={srcdoc}
+        sandbox={sandboxAttr}
+        className="h-full w-full border-0"
+        title="Widget Preview"
+      />
     </div>
   );
-}
-
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-}
-
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: string | null;
-}
-
-class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error: error.message };
-  }
-
-  componentDidCatch(error: Error) {
-    console.error('Widget render error:', error);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex h-full w-full items-center justify-center p-3">
-          <span className="text-destructive text-center text-xs">
-            {this.state.error}
-          </span>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
 }

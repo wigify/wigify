@@ -189,7 +189,7 @@ export async function getWidgetSourcePath(widgetName: string): Promise<string> {
   if (!location) {
     throw new Error(`Widget not found: ${widgetName}`);
   }
-  return path.join(location.path, 'widget.jsx');
+  return path.join(location.path, 'widget.html');
 }
 
 export async function readWidgetSource(widgetName: string): Promise<string> {
@@ -342,7 +342,7 @@ export async function createWidget(
     JSON.stringify(manifest, null, 2),
   );
 
-  await fs.writeFile(path.join(widgetDir, 'widget.jsx'), options.code);
+  await fs.writeFile(path.join(widgetDir, 'widget.html'), options.code);
 }
 
 export async function deleteWidget(name: string): Promise<void> {

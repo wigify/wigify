@@ -2,7 +2,7 @@
 
 ## Widget System
 
-Wigify allows users to create and display custom desktop widgets built with React. Widgets are standalone mini-applications that float on your desktop, providing quick access to information and tools.
+Wigify allows users to create and display custom desktop widgets built with plain HTML, CSS, and JavaScript. Widgets are standalone mini-applications that float on your desktop, providing quick access to information and tools.
 
 ### Widget Sources
 
@@ -15,10 +15,7 @@ Each widget follows this structure:
 ```
 widget-name/
 ├── package.json      # Widget manifest (name, size, variables)
-├── src/
-│   └── widget.tsx    # Widget React component (source)
-└── dist/
-    └── widget.js     # Pre-built widget bundle
+└── widget.html       # Widget source (HTML, CSS, JS)
 ```
 
 User configuration is stored separately in `~/.config/wigify/`:
@@ -66,40 +63,49 @@ User configuration is stored separately in `~/.config/wigify/`:
 }
 ```
 
-### Widget Component
+### Widget Source (widget.html)
 
-Widgets are React components that can use the `@wigify/api` package:
+Widgets are plain HTML files with embedded CSS and JavaScript:
 
-```tsx
-import { useVariable, useInterval } from '@wigify/api';
+```html
+<style>
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: system-ui, sans-serif;
+    color: white;
+    background: rgba(30, 30, 30, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+  }
+</style>
 
-export default function MyWidget() {
-  const apiKey = useVariable<string>('apiKey');
-  
-  useInterval(() => {
+<div class="container">
+  <span id="value">Loading...</span>
+</div>
+
+<script>
+  const apiKey = wigify.variables.apiKey;
+
+  setInterval(() => {
     // Refresh data
   }, 60000);
-
-  return (
-    <div style={{ /* widget styles */ }}>
-      {/* Widget content */}
-    </div>
-  );
-}
+</script>
 ```
 
-### Widget API (`@wigify/api`)
+### Widget API (`window.wigify`)
 
-The widget API provides hooks for widget authors:
+The widget API is available as a global object in widget scripts:
 
-| Hook | Description |
+| Property / Method | Description |
 |------|-------------|
-| `useVariable<T>(name)` | Get a configured variable value |
-| `useVariables()` | Get all variable values |
-| `useRefresh()` | Get a function to refresh the widget |
-| `useInterval(callback, ms)` | Run a callback at an interval |
-| `useAutoRefresh(ms)` | Auto-refresh the widget at an interval |
-| `useWidgetInfo()` | Get widget instance ID and name |
+| `wigify.variables` | Object containing all configured variable values |
+| `wigify.instanceId` | The unique instance ID of this widget |
+| `wigify.widgetName` | The widget name |
+| `wigify.refresh()` | Reload the widget |
 
 ### Variable Types
 
@@ -115,12 +121,11 @@ The widget API provides hooks for widget authors:
 Wigify provides templates as starting points for creating new widgets:
 
 #### Blank Template
-- Minimal React widget with basic styling
+- Minimal HTML widget with basic styling
 - Perfect for starting from scratch
 
 #### Stat Template  
 - Pre-styled widget for displaying a single statistic
-- Includes a placeholder `getData()` function
 - Great for Grafana metrics, system stats, or any numeric display
 
 ### Main Window

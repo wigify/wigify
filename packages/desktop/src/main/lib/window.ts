@@ -110,10 +110,13 @@ export class Window {
   }
 
   async load(): Promise<void> {
+    const entry = this.config.type === 'widget' ? 'widget.html' : 'index.html';
+
     if (VITE_DEV_SERVER_URL) {
-      await this.browserWindow.loadURL(VITE_DEV_SERVER_URL);
+      const url = new URL(entry, VITE_DEV_SERVER_URL).href;
+      await this.browserWindow.loadURL(url);
     } else {
-      await this.browserWindow.loadFile(path.join(RENDERER_DIST, 'index.html'));
+      await this.browserWindow.loadFile(path.join(RENDERER_DIST, entry));
     }
   }
 
