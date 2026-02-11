@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-function getData(): number | string {
+function getData() {
   return 42;
 }
 
 export default function StatWidget() {
-  const [value, setValue] = useState<number | string>("--");
+  const [value, setValue] = useState("--");
 
   useEffect(() => {
     setValue(getData());

@@ -1,5 +1,7 @@
 import blankManifest from "./blank/manifest.json";
 import statManifest from "./stat/manifest.json";
+import blankCode from "./blank/widget.jsx?raw";
+import statCode from "./stat/widget.jsx?raw";
 
 export interface TemplateManifest {
   name: string;
@@ -18,16 +20,19 @@ export interface TemplateManifest {
 export interface Template {
   name: string;
   manifest: TemplateManifest;
+  code: string;
 }
 
 export const templates: Template[] = [
   {
     name: "blank",
     manifest: blankManifest as TemplateManifest,
+    code: blankCode,
   },
   {
     name: "stat",
     manifest: statManifest as TemplateManifest,
+    code: statCode,
   },
 ];
 
