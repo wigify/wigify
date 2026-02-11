@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import * as Babel from '@babel/standalone';
 import * as React from 'react';
+import { compileWidgetSource } from '../lib/widget-runtime';
 
 interface WidgetPreviewProps {
   code: string;
@@ -22,69 +22,8 @@ export default function WidgetPreview({ code, className }: WidgetPreviewProps) {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const transpileAndExecute = useCallback((sourceCode: string) => {
-    try {
-      const transpiledCode = Babel.transform(sourceCode, {
-        presets: ['react', 'env'],
-        plugins: ['transform-modules-commonjs'],
-        filename: 'widget.jsx',
-      }).code;
-
-      if (!transpiledCode) {
-        setState({ component: null, error: 'Transpilation failed' });
-        return;
-      }
-
-      const moduleExports: { default?: React.ComponentType } = {};
-      const module = { exports: moduleExports };
-
-      const requireFn = (moduleName: string) => {
-        if (moduleName === 'react') {
-          return React;
-        }
-        throw new Error(`Module not found: ${moduleName}`);
-      };
-
-      const executeCode = new Function(
-        'exports',
-        'module',
-        'require',
-        'React',
-        'useState',
-        'useEffect',
-        'useCallback',
-        'useMemo',
-        'useRef',
-        transpiledCode,
-      );
-
-      executeCode(
-        moduleExports,
-        module,
-        requireFn,
-        React,
-        React.useState,
-        React.useEffect,
-        React.useCallback,
-        React.useMemo,
-        React.useRef,
-      );
-
-      const exportedComponent = module.exports.default || moduleExports.default;
-
-      if (typeof exportedComponent !== 'function') {
-        setState({
-          component: null,
-          error: 'No default export found. Export a component as default.',
-        });
-        return;
-      }
-
-      setState({ component: exportedComponent, error: null });
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Unknown error occurred';
-      setState({ component: null, error: errorMessage });
-    }
+    const result = compileWidgetSource(sourceCode);
+    setState(result);
   }, []);
 
   useEffect(() => {

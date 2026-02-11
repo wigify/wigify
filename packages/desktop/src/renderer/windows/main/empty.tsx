@@ -1,4 +1,5 @@
 import { LayoutGrid, Plus } from 'lucide-react';
+import TitleBar from '../../components/title-bar';
 import { Button } from '../../components/ui/button';
 
 interface EmptyPageProps {
@@ -8,9 +9,7 @@ interface EmptyPageProps {
 export default function EmptyPage({ onAddWidget }: EmptyPageProps) {
   return (
     <>
-      <div className="titlebar border-border flex items-center justify-center border-b">
-        <h1 className="text-muted-foreground text-sm font-medium">Wigify</h1>
-      </div>
+      <TitleBar title="Wigify" />
 
       <div className="window-content flex h-full flex-col items-center justify-center gap-6">
         <div className="flex flex-col items-center gap-4">

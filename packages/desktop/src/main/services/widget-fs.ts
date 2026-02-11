@@ -15,7 +15,8 @@ import { decryptSecret, encryptSecret } from './secrets';
 const CONFIG_DIR = path.join(app.getPath('home'), '.config', 'wigify');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 const VARIABLES_DIR = path.join(CONFIG_DIR, 'variables');
-const USER_WIDGETS_DIR = path.join(app.getPath('home'), '.wigify', 'widgets');
+const USER_WIDGETS_DIR = path.join(CONFIG_DIR, 'widgets');
+const LEGACY_WIDGETS_DIR = path.join(app.getPath('home'), '.wigify', 'widgets');
 
 function getUserWidgetsDir(): string {
   return USER_WIDGETS_DIR;
@@ -54,7 +55,24 @@ async function listWidgetsFromDir(
 }
 
 export async function listAllWidgetLocations(): Promise<WidgetLocation[]> {
-  return listWidgetsFromDir(getUserWidgetsDir(), 'user');
+  const [currentLocations, legacyLocations] = await Promise.all([
+    listWidgetsFromDir(getUserWidgetsDir(), 'user'),
+    listWidgetsFromDir(LEGACY_WIDGETS_DIR, 'user'),
+  ]);
+
+  const uniqueLocations = new Map<string, WidgetLocation>();
+
+  for (const location of currentLocations) {
+    uniqueLocations.set(location.name, location);
+  }
+
+  for (const location of legacyLocations) {
+    if (!uniqueLocations.has(location.name)) {
+      uniqueLocations.set(location.name, location);
+    }
+  }
+
+  return [...uniqueLocations.values()];
 }
 
 export async function getWidgetLocation(
@@ -166,10 +184,23 @@ export async function getWidgetBundlePath(widgetName: string): Promise<string> {
   return path.join(location.path, 'dist', 'widget.js');
 }
 
+export async function getWidgetSourcePath(widgetName: string): Promise<string> {
+  const location = await getWidgetLocation(widgetName);
+  if (!location) {
+    throw new Error(`Widget not found: ${widgetName}`);
+  }
+  return path.join(location.path, 'widget.jsx');
+}
+
+export async function readWidgetSource(widgetName: string): Promise<string> {
+  const sourcePath = await getWidgetSourcePath(widgetName);
+  return fs.readFile(sourcePath, 'utf-8');
+}
+
 export async function isWidgetBuilt(widgetName: string): Promise<boolean> {
   try {
-    const bundlePath = await getWidgetBundlePath(widgetName);
-    await fs.access(bundlePath);
+    const sourcePath = await getWidgetSourcePath(widgetName);
+    await fs.access(sourcePath);
     return true;
   } catch {
     return false;
@@ -185,6 +216,14 @@ export async function loadWidgetState(
   const manifest = await readWidgetManifest(widgetName);
   if (!manifest) return null;
 
+  let sourceCode = '';
+
+  try {
+    sourceCode = await readWidgetSource(widgetName);
+  } catch {
+    return null;
+  }
+
   const isBuilt = await isWidgetBuilt(widgetName);
   const config = await loadWidgetConfig();
   const instances = config.widgets.filter(w => w.widgetName === widgetName);
@@ -192,6 +231,7 @@ export async function loadWidgetState(
   return {
     manifest,
     path: location.path,
+    sourceCode,
     isBuilt,
     instances,
   };
@@ -262,4 +302,71 @@ export async function getWidgetInstance(
 export async function getEnabledWidgetInstances(): Promise<WidgetInstance[]> {
   const config = await loadWidgetConfig();
   return config.widgets.filter(w => w.enabled);
+}
+
+export interface CreateWidgetOptions {
+  name: string;
+  code: string;
+  size: { width: number; height: number };
+}
+
+export async function createWidget(
+  options: CreateWidgetOptions,
+): Promise<void> {
+  await ensureConfigDirectories();
+
+  const widgetDir = path.join(getUserWidgetsDir(), options.name);
+
+  try {
+    await fs.access(widgetDir);
+    throw new Error(`Widget "${options.name}" already exists`);
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+      throw err;
+    }
+  }
+
+  await fs.mkdir(widgetDir, { recursive: true });
+
+  const manifest: WidgetManifest = {
+    name: options.name,
+    version: '1.0.0',
+    title: options.name,
+    size: options.size,
+    resizable: true,
+    variables: [],
+  };
+
+  await fs.writeFile(
+    path.join(widgetDir, 'package.json'),
+    JSON.stringify(manifest, null, 2),
+  );
+
+  await fs.writeFile(path.join(widgetDir, 'widget.jsx'), options.code);
+}
+
+export async function deleteWidget(name: string): Promise<void> {
+  const location = await getWidgetLocation(name);
+  if (!location) {
+    throw new Error(`Widget not found: ${name}`);
+  }
+
+  const config = await loadWidgetConfig();
+  config.widgets = config.widgets.filter(w => w.widgetName !== name);
+  await saveWidgetConfig(config);
+
+  const variablesPath = getVariablesFilePath(name);
+  await fs.rm(variablesPath, { force: true });
+
+  await fs.rm(location.path, { recursive: true, force: true });
+}
+
+export async function widgetExists(name: string): Promise<boolean> {
+  const widgetDir = path.join(getUserWidgetsDir(), name);
+  try {
+    await fs.access(widgetDir);
+    return true;
+  } catch {
+    return false;
+  }
 }

@@ -35,6 +35,17 @@ export function useWidgets() {
 
   useEffect(() => {
     fetchWidgets();
+
+    const renderer = ipc();
+    if (!renderer) return;
+
+    const handleRemoved = () => {
+      fetchWidgets();
+    };
+    renderer.on('widget:removed', handleRemoved);
+    return () => {
+      renderer.off('widget:removed', handleRemoved);
+    };
   }, [fetchWidgets]);
 
   const buildWidget = useCallback(
@@ -110,6 +121,36 @@ export function useWidgets() {
     await ipc().invoke('widget:close', instanceId);
   }, []);
 
+  const createWidget = useCallback(
+    async (options: {
+      name: string;
+      code: string;
+      size: { width: number; height: number };
+    }): Promise<void> => {
+      if (!ipc()) throw new Error('IPC not available');
+      await ipc().invoke('widget:create', options);
+      await fetchWidgets();
+    },
+    [fetchWidgets],
+  );
+
+  const deleteWidget = useCallback(
+    async (widgetName: string): Promise<void> => {
+      if (!ipc()) return;
+      await ipc().invoke('widget:delete', widgetName);
+      await fetchWidgets();
+    },
+    [fetchWidgets],
+  );
+
+  const checkWidgetExists = useCallback(
+    async (name: string): Promise<boolean> => {
+      if (!ipc()) throw new Error('IPC not available');
+      return ipc().invoke<boolean>('widget:exists', name);
+    },
+    [],
+  );
+
   return {
     widgets,
     loading,
@@ -122,5 +163,8 @@ export function useWidgets() {
     openWidgetFolder,
     spawnWidget,
     closeWidget,
+    createWidget,
+    deleteWidget,
+    checkWidgetExists,
   };
 }

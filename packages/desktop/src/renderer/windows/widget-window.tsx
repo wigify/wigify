@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { WidgetProvider } from '@wigify/api';
 import type { WidgetWindowPayload } from '@wigify/types';
+import { compileWidgetSource } from '../lib/widget-runtime';
 
 interface WidgetWindowProps {
   payload: WidgetWindowPayload;
@@ -14,25 +15,17 @@ export default function WidgetWindow({ payload }: WidgetWindowProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadWidget() {
-      try {
-        const module = await import(/* @vite-ignore */ payload.bundlePath);
-        const component = module.default || module.Widget;
+    const result = compileWidgetSource(payload.sourceCode);
 
-        if (!component) {
-          throw new Error('Widget module must export a default component');
-        }
-
-        setWidget(() => component);
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : 'Failed to load widget';
-        setError(message);
-      }
+    if (result.error) {
+      setWidget(null);
+      setError(result.error);
+      return;
     }
 
-    loadWidget();
-  }, [payload.bundlePath]);
+    setWidget(() => result.component);
+    setError(null);
+  }, [payload.sourceCode]);
 
   const handleRefresh = () => {
     window.location.reload();

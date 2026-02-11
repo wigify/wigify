@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Check,
   ChevronsUpDown,
@@ -9,6 +9,7 @@ import {
   Plus,
   Save,
   Search,
+  Settings,
 } from 'lucide-react';
 import { templates } from '@wigify/templates';
 import type { Template } from '@wigify/templates';
@@ -28,10 +29,21 @@ import {
 } from '../../components/ui/popover';
 import MonacoEditor from '../../components/monaco-editor';
 import WidgetPreview from '../../components/widget-preview';
+import CollapsibleSection from '../../components/collapsible-section';
+import { useLocalStorage } from '../../hooks/use-local-storage';
+import { useWidgets } from '../../hooks/use-widgets';
 import { cn } from '../../lib/utils';
+
+interface SidebarSections {
+  settings: boolean;
+  templates: boolean;
+  preview: boolean;
+  variables: boolean;
+}
 
 interface AddWidgetPageProps {
   onBack: () => void;
+  onSave?: () => void;
 }
 
 interface VariableItem {
@@ -48,12 +60,35 @@ const VARIABLE_ITEMS: VariableItem[] = [
 
 const DEFAULT_TEMPLATE = templates[0];
 
-export default function AddWidgetPage({ onBack }: AddWidgetPageProps) {
+const DEFAULT_SECTIONS: SidebarSections = {
+  settings: true,
+  templates: true,
+  preview: true,
+  variables: true,
+};
+
+const WIDGET_NAME_REGEX = /^[a-z][a-z0-9-]*$/;
+
+export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
   const [query, setQuery] = useState('');
   const [pendingTemplate, setPendingTemplate] = useState<Template | null>(null);
   const [code, setCode] = useState(DEFAULT_TEMPLATE.code);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [comboboxOpen, setComboboxOpen] = useState(false);
+  const [sections, setSections] = useLocalStorage<SidebarSections>(
+    'add-widget:sidebar-sections',
+    DEFAULT_SECTIONS,
+  );
+
+  const [widgetName, setWidgetName] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const { createWidget, addWidgetToScreen } = useWidgets();
+
+  const toggleSection = (section: keyof SidebarSections) => {
+    setSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   const handleTemplateSelect = (templateName: string) => {
     const template = templates.find(t => t.name === templateName);
@@ -71,6 +106,37 @@ export default function AddWidgetPage({ onBack }: AddWidgetPageProps) {
     setCode(pendingTemplate.code);
     setPendingTemplate(null);
   };
+
+  const isValidName = useMemo(() => {
+    return widgetName.length > 0 && WIDGET_NAME_REGEX.test(widgetName);
+  }, [widgetName]);
+
+  const canSave = useMemo(() => {
+    return isValidName && code.trim().length > 0 && !saving;
+  }, [isValidName, code, saving]);
+
+  const handleSave = useCallback(async () => {
+    if (!canSave) return;
+
+    setSaving(true);
+    setError(null);
+
+    try {
+      await createWidget({
+        name: widgetName,
+        code,
+        size: DEFAULT_TEMPLATE.manifest.size,
+      });
+
+      await addWidgetToScreen(widgetName);
+      onSave?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save widget');
+    } finally {
+      setSaving(false);
+    }
+  }, [canSave, widgetName, code, createWidget, addWidgetToScreen, onSave]);
+
   const isMac = useMemo(() => {
     return navigator.platform.toLowerCase().includes('mac');
   }, []);
@@ -114,8 +180,19 @@ export default function AddWidgetPage({ onBack }: AddWidgetPageProps) {
         </div>
 
         <div className="titlebar-no-drag flex items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7">
-            <Save className="text-muted-foreground h-3.5 w-3.5" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            disabled={!canSave}
+            onClick={handleSave}
+          >
+            <Save
+              className={cn(
+                'h-3.5 w-3.5',
+                canSave ? 'text-foreground' : 'text-muted-foreground',
+              )}
+            />
           </Button>
           <Button
             variant="ghost"
@@ -144,15 +221,51 @@ export default function AddWidgetPage({ onBack }: AddWidgetPageProps) {
 
         {sidebarOpen && (
           <aside className="border-border flex w-80 shrink-0 flex-col border-l">
-            <div className="flex shrink-0 flex-col">
-              <div className="border-border flex h-9 shrink-0 items-center border-b px-3">
-                <div className="flex items-center gap-2">
-                  <LayoutTemplate className="text-muted-foreground h-3.5 w-3.5" />
-                  <span className="text-muted-foreground text-xs font-medium">
-                    Templates
-                  </span>
+            <CollapsibleSection
+              icon={<Settings className="text-muted-foreground h-3.5 w-3.5" />}
+              title="Settings"
+              isOpen={sections.settings}
+              onToggle={() => toggleSection('settings')}
+            >
+              <div className="flex flex-col gap-3 p-3">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-muted-foreground text-xs font-medium">
+                    Name
+                  </label>
+                  <input
+                    value={widgetName}
+                    onChange={e => setWidgetName(e.target.value.toLowerCase())}
+                    placeholder="my-widget"
+                    className={cn(
+                      'border-border bg-secondary text-foreground placeholder:text-muted-foreground/70 h-8 rounded-md border px-2.5 text-xs outline-none',
+                      'focus:ring-ring focus:ring-1',
+                      widgetName && !isValidName && 'border-destructive',
+                    )}
+                  />
+                  {widgetName && !isValidName && (
+                    <span className="text-destructive text-xs">
+                      Use lowercase letters, numbers, and hyphens only
+                    </span>
+                  )}
                 </div>
+
+                {error && (
+                  <div className="bg-destructive/10 text-destructive rounded-md px-2.5 py-2 text-xs">
+                    {error}
+                  </div>
+                )}
               </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              icon={
+                <LayoutTemplate className="text-muted-foreground h-3.5 w-3.5" />
+              }
+              title="Templates"
+              isOpen={sections.templates}
+              onToggle={() => toggleSection('templates')}
+              className="border-border max-h-24 border-t"
+            >
               <div className="flex items-center gap-1.5 p-2">
                 <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
                   <PopoverTrigger asChild>
@@ -209,35 +322,34 @@ export default function AddWidgetPage({ onBack }: AddWidgetPageProps) {
                   Apply
                 </Button>
               </div>
-            </div>
+            </CollapsibleSection>
 
-            <div className="border-border flex flex-1 flex-col border-t">
-              <div className="border-border flex h-9 shrink-0 items-center justify-between border-b px-3">
-                <div className="flex items-center gap-2">
-                  <Eye className="text-muted-foreground h-3.5 w-3.5" />
-                  <span className="text-muted-foreground text-xs font-medium">
-                    Preview
-                  </span>
-                </div>
-              </div>
+            <CollapsibleSection
+              icon={<Eye className="text-muted-foreground h-3.5 w-3.5" />}
+              title="Preview"
+              isOpen={sections.preview}
+              onToggle={() => toggleSection('preview')}
+              className="border-border max-h-64 border-t"
+            >
               <div className="flex flex-1 items-center justify-center overflow-hidden p-3">
                 <WidgetPreview
                   code={code}
                   className="h-full w-full overflow-hidden rounded-lg"
                 />
               </div>
-            </div>
+            </CollapsibleSection>
 
-            <div className="border-border flex flex-1 flex-col border-t">
-              <div className="border-border flex h-9 shrink-0 items-center justify-between border-b px-3">
-                <span className="text-muted-foreground text-xs font-medium">
-                  Variables
-                </span>
+            <CollapsibleSection
+              title="Variables"
+              isOpen={sections.variables}
+              onToggle={() => toggleSection('variables')}
+              headerActions={
                 <Button variant="ghost" size="icon" className="h-6 w-6">
                   <Plus className="text-muted-foreground h-3.5 w-3.5" />
                 </Button>
-              </div>
-
+              }
+              className="border-border border-y"
+            >
               <div className="p-2">
                 <div className="bg-secondary flex items-center gap-2 rounded-md px-2 py-1.5">
                   <Search className="text-muted-foreground h-3 w-3" />
@@ -276,7 +388,7 @@ export default function AddWidgetPage({ onBack }: AddWidgetPageProps) {
                   </div>
                 )}
               </div>
-            </div>
+            </CollapsibleSection>
           </aside>
         )}
       </div>

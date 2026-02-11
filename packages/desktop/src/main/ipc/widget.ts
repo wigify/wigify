@@ -11,18 +11,23 @@ import type {
 import { buildWidget } from '../services/widget-bundler';
 import {
   addWidgetInstance,
+  createWidget,
+  deleteWidget,
   getEnabledWidgetInstances,
   getWidgetBundlePath,
   getWidgetInstance,
   getWidgetPath,
   listAllWidgets,
+  loadWidgetConfig,
   loadWidgetState,
   readWidgetManifest,
   readWidgetVariables,
   removeWidgetInstance,
   updateWidgetInstance,
+  widgetExists,
   writeWidgetVariables,
 } from '../services/widget-fs';
+import type { CreateWidgetOptions } from '../services/widget-fs';
 import {
   closeWidgetWindow,
   spawnWidgetWindow,
@@ -164,5 +169,28 @@ export function registerWidgetIpc(): void {
     for (const instance of instances) {
       await spawnWidgetWindow(instance);
     }
+  });
+
+  ipcMain.handle(
+    'widget:create',
+    async (_, options: CreateWidgetOptions): Promise<void> => {
+      await createWidget(options);
+    },
+  );
+
+  ipcMain.handle(
+    'widget:delete',
+    async (_, widgetName: string): Promise<void> => {
+      const config = await loadWidgetConfig();
+      const instances = config.widgets.filter(w => w.widgetName === widgetName);
+      for (const instance of instances) {
+        closeWidgetWindow(instance.id);
+      }
+      await deleteWidget(widgetName);
+    },
+  );
+
+  ipcMain.handle('widget:exists', async (_, name: string): Promise<boolean> => {
+    return widgetExists(name);
   });
 }

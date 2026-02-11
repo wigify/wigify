@@ -2,7 +2,11 @@ import { app, BrowserWindow } from 'electron';
 
 import { registerWidgetIpc } from './ipc/widget';
 import { createWindow, Window } from './lib/window';
-import { ensureConfigDirectories } from './services/widget-fs';
+import {
+  ensureConfigDirectories,
+  getEnabledWidgetInstances,
+} from './services/widget-fs';
+import { setAppQuitting, spawnWidgetWindow } from './services/widget-manager';
 
 export let mainWindow: Window | null = null;
 
@@ -16,7 +20,16 @@ async function initializeApp(): Promise<void> {
     height: 600,
     show: true,
   });
+
+  const instances = await getEnabledWidgetInstances();
+  for (const instance of instances) {
+    await spawnWidgetWindow(instance);
+  }
 }
+
+app.on('before-quit', () => {
+  setAppQuitting();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

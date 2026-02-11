@@ -55,6 +55,7 @@ export interface WidgetInstance {
 export interface WidgetState {
   manifest: WidgetManifest;
   path: string;
+  sourceCode: string;
   isBuilt: boolean;
   buildError?: string;
   instances: WidgetInstance[];
@@ -75,7 +76,7 @@ export interface WidgetBuildResult {
 export interface WidgetWindowPayload {
   instanceId: string;
   widgetName: string;
-  bundlePath: string;
+  sourceCode: string;
   variables: WidgetVariableValues;
   size: WidgetSize;
 }

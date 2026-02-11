@@ -6,9 +6,18 @@ import type {
 
 import { createWindow, Window } from '../lib/window';
 
-import { getWidgetBundlePath, readWidgetManifest } from './widget-fs';
+import {
+  readWidgetManifest,
+  readWidgetSource,
+  removeWidgetInstance,
+} from './widget-fs';
 
 const widgetWindows = new Map<string, Window>();
+let isAppQuitting = false;
+
+export function setAppQuitting(): void {
+  isAppQuitting = true;
+}
 
 export async function spawnWidgetWindow(
   instance: WidgetInstance,
@@ -26,12 +35,18 @@ export async function spawnWidgetWindow(
     return null;
   }
 
-  const bundlePath = await getWidgetBundlePath(instance.widgetName);
+  let sourceCode = '';
+
+  try {
+    sourceCode = await readWidgetSource(instance.widgetName);
+  } catch {
+    return null;
+  }
 
   const payload: WidgetWindowPayload = {
     instanceId: instance.id,
     widgetName: instance.widgetName,
-    bundlePath,
+    sourceCode,
     variables: instance.variables,
     size: instance.size,
   };
@@ -45,6 +60,8 @@ export async function spawnWidgetWindow(
     type: 'widget',
     width: instance.size.width,
     height: instance.size.height,
+    minWidth: 1,
+    minHeight: 1,
     x: instance.position.x,
     y: instance.position.y,
     frame: false,
@@ -62,8 +79,17 @@ export async function spawnWidgetWindow(
 
   window.getBrowserWindow().webContents.send('load', windowData);
 
-  window.on('closed', () => {
+  window.on('closed', async () => {
     widgetWindows.delete(instance.id);
+
+    if (isAppQuitting) return;
+
+    await removeWidgetInstance(instance.id);
+
+    const { mainWindow } = await import('../main');
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.getBrowserWindow().webContents.send('widget:removed');
+    }
   });
 
   window.on('moved', () => {
