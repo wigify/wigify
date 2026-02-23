@@ -15,7 +15,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "pre-commit": "bun lint && bun test && bun format"
+    "pre-commit": "bun lint && bun run test && bun format"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

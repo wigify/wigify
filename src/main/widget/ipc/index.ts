@@ -1,4 +1,4 @@
-import { ipcMain, screen, shell } from 'electron';
+import { ipcMain, shell } from 'electron';
 import { randomUUID } from 'node:crypto';
 
 import type {
@@ -29,6 +29,7 @@ import {
   writeWidgetVariables,
 } from '@/main/widget/fs';
 import type { CreateWidgetOptions } from '@/main/widget/fs';
+import { arrangeAllWidgets, findNextGridPosition } from '@/main/widget/grid';
 import { closeWidgetWindow, spawnWidgetWindow } from '@/main/widget/manager';
 
 export function registerWidgetIpc(): void {
@@ -97,18 +98,14 @@ export function registerWidgetIpc(): void {
       const defaultVariables = await readWidgetVariables(widgetName, manifest);
       const mergedVariables = { ...defaultVariables, ...variables };
 
-      const defaultPosition = (): { x: number; y: number } => {
-        const { workArea } = screen.getPrimaryDisplay();
-        return {
-          x: workArea.x + workArea.width - manifest.size.width - 20,
-          y: workArea.y + 20,
-        };
-      };
+      const config = await loadWidgetConfig();
+      const gridPosition =
+        position ?? findNextGridPosition(config.widgets, manifest.size);
 
       const instance: WidgetInstance = {
         id: randomUUID(),
         widgetName,
-        position: position ?? defaultPosition(),
+        position: gridPosition,
         size: manifest.size,
         variables: mergedVariables,
         enabled: true,
@@ -205,5 +202,9 @@ export function registerWidgetIpc(): void {
 
   ipcMain.handle('widget:exists', async (_, name: string): Promise<boolean> => {
     return widgetExists(name);
+  });
+
+  ipcMain.handle('widget:arrange', async (): Promise<void> => {
+    await arrangeAllWidgets();
   });
 }

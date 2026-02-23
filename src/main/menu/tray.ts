@@ -8,6 +8,7 @@ import {
 } from '@/main/system/cursor-proximity';
 import { loadSettings, updateSetting } from '@/main/system/settings';
 import { isDev } from '@/main/utils/env';
+import { arrangeAllWidgets } from '@/main/widget/grid';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.join(__dirname, '..');
@@ -40,6 +41,10 @@ async function buildContextMenu(): Promise<Menu> {
 
         stopCursorProximityTracking();
       },
+    },
+    {
+      label: 'Arrange Widgets',
+      click: () => arrangeAllWidgets(),
     },
     { type: 'separator' },
     {

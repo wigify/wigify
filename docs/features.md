@@ -130,6 +130,16 @@ Wigify provides templates as starting points for creating new widgets:
 - Pre-styled widget for displaying a single statistic
 - Great for Grafana metrics, system stats, or any numeric display
 
+### Smart Grid Positioning
+
+Widgets are automatically positioned on a grid to avoid overlapping. When you add a new widget, it finds the next available slot on screen rather than stacking on top of existing widgets.
+
+- **Vertical-first layout**: Widgets fill downward in a column starting from the top-right corner of the screen
+- **Column overflow**: When a column is full, the next widget starts a new column to the left
+- **Gap-aware**: Respects 20px gaps between widgets and 20px margins from screen edges
+- **Overlap detection**: New widgets scan for free space, avoiding any existing widgets regardless of where they've been dragged
+- **Arrange Widgets**: Use the system tray menu "Arrange Widgets" option to reflow all widgets into a clean grid layout. Also available programmatically via the `arrangeWidgets` function in the `useWidgets` hook
+
 ### Cursor Dodge
 
 Widgets automatically hide and become click-through when the cursor approaches any widget, allowing you to interact with content behind them without manually moving widgets out of the way. When the cursor moves away, all widgets reappear.

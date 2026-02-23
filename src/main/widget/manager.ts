@@ -7,6 +7,7 @@ import {
   readWidgetManifest,
   readWidgetSource,
   removeWidgetInstance,
+  updateWidgetInstance,
 } from '@/main/widget/fs';
 
 const widgetWindows = new Map<string, Window>();
@@ -70,6 +71,7 @@ export async function spawnWidgetWindow(
     minimizable: false,
     maximizable: false,
     hasShadow: false,
+    focusable: false,
     show: true,
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: -100, y: -100 },
@@ -99,6 +101,16 @@ export async function spawnWidgetWindow(
         x: bounds.x,
         y: bounds.y,
       });
+    updateWidgetInstance(instance.id, {
+      position: { x: bounds.x, y: bounds.y },
+    });
+  });
+
+  window.on('resized', () => {
+    const bounds = window.getBounds();
+    updateWidgetInstance(instance.id, {
+      size: { width: bounds.width, height: bounds.height },
+    });
   });
 
   widgetWindows.set(instance.id, window);

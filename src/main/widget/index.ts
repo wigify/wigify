@@ -35,6 +35,12 @@ export type {
 export { buildWidget, watchWidget } from '@/main/widget/bundler';
 
 export {
+  findNextGridPosition,
+  arrangeWidgets,
+  arrangeAllWidgets,
+} from '@/main/widget/grid';
+
+export {
   spawnWidgetWindow,
   closeWidgetWindow,
   getWidgetWindow,

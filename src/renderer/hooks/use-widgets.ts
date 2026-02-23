@@ -160,6 +160,12 @@ export function useWidgets() {
     [],
   );
 
+  const arrangeWidgets = useCallback(async (): Promise<void> => {
+    if (!ipc()) return;
+    await ipc().invoke('widget:arrange');
+    await fetchWidgets();
+  }, [fetchWidgets]);
+
   return {
     widgets,
     loading,
@@ -176,5 +182,6 @@ export function useWidgets() {
     updateWidgetSource,
     deleteWidget,
     checkWidgetExists,
+    arrangeWidgets,
   };
 }

@@ -119,7 +119,11 @@ export class Window {
 
     this.browserWindow.once('ready-to-show', () => {
       if (this.config.show !== false) {
-        this.browserWindow.show();
+        if (this.config.type === 'widget') {
+          this.browserWindow.showInactive();
+        } else {
+          this.browserWindow.show();
+        }
       }
     });
   }
