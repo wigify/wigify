@@ -86,7 +86,7 @@ export default function ActiveWidgets() {
             No active widgets
           </span>
           <span className="text-muted-foreground text-center text-sm">
-            Add widgets to your screen from the Created tab
+            Add widgets to your screen from the Available tab
           </span>
         </div>
       </div>

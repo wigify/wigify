@@ -6,9 +6,7 @@ import {
   Eye,
   LayoutTemplate,
   PanelRight,
-  Plus,
   Save,
-  Search,
   Settings,
 } from 'lucide-react';
 import { templates } from '@/templates';
@@ -39,7 +37,6 @@ interface SidebarSections {
   settings: boolean;
   templates: boolean;
   preview: boolean;
-  variables: boolean;
 }
 
 interface WidgetEditorProps {
@@ -48,25 +45,12 @@ interface WidgetEditorProps {
   onSave?: () => void;
 }
 
-interface VariableItem {
-  name: string;
-  type: string;
-  value: string;
-}
-
-const VARIABLE_ITEMS: VariableItem[] = [
-  { name: 'username', type: 'string', value: '"john_doe"' },
-  { name: 'count', type: 'number', value: '42' },
-  { name: 'isActive', type: 'boolean', value: 'true' },
-];
-
 const DEFAULT_TEMPLATE = templates[0];
 
 const DEFAULT_SECTIONS: SidebarSections = {
   settings: true,
   templates: true,
   preview: true,
-  variables: true,
 };
 
 const WIDGET_NAME_REGEX = /^[a-z][a-z0-9-]*$/;
@@ -78,7 +62,6 @@ export default function WidgetEditor({
 }: WidgetEditorProps) {
   const isEditing = !!widget;
 
-  const [query, setQuery] = useState('');
   const [pendingTemplate, setPendingTemplate] = useState<Template | null>(null);
   const [code, setCode] = useState(widget?.sourceCode ?? DEFAULT_TEMPLATE.code);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -161,20 +144,6 @@ export default function WidgetEditor({
   const isMac = useMemo(() => {
     return navigator.platform.toLowerCase().includes('mac');
   }, []);
-
-  const filteredVariables = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    if (!normalizedQuery) return VARIABLE_ITEMS;
-
-    return VARIABLE_ITEMS.filter(variable => {
-      return (
-        variable.name.toLowerCase().includes(normalizedQuery) ||
-        variable.type.toLowerCase().includes(normalizedQuery) ||
-        variable.value.toLowerCase().includes(normalizedQuery)
-      );
-    });
-  }, [query]);
 
   const title = isEditing ? widget.manifest.title : 'Add Widget';
 
@@ -356,57 +325,6 @@ export default function WidgetEditor({
                   debounce={300}
                   className="h-full w-full overflow-hidden rounded-lg"
                 />
-              </div>
-            </CollapsibleSection>
-
-            <CollapsibleSection
-              title="Variables"
-              isOpen={sections.variables}
-              onToggle={() => toggleSection('variables')}
-              headerActions={
-                <Button variant="ghost" size="icon" className="h-6 w-6">
-                  <Plus className="text-muted-foreground h-3.5 w-3.5" />
-                </Button>
-              }
-              className="border-border border-y"
-            >
-              <div className="p-2">
-                <div className="bg-secondary flex items-center gap-2 rounded-md px-2 py-1.5">
-                  <Search className="text-muted-foreground h-3 w-3" />
-                  <input
-                    value={query}
-                    onChange={event => setQuery(event.target.value)}
-                    placeholder="Search"
-                    className="placeholder:text-muted-foreground/70 text-foreground w-full bg-transparent text-xs outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-1 flex-col gap-1.5 overflow-auto px-2 pb-2">
-                {filteredVariables.map(variable => (
-                  <div
-                    key={variable.name}
-                    className="bg-secondary rounded-md px-2.5 py-2"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-foreground font-mono text-xs font-medium">
-                        {variable.name}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {variable.type}
-                      </span>
-                    </div>
-                    <span className="text-muted-foreground mt-0.5 block font-mono text-xs">
-                      {variable.value}
-                    </span>
-                  </div>
-                ))}
-
-                {!filteredVariables.length && (
-                  <div className="text-muted-foreground flex h-16 items-center justify-center text-xs">
-                    No variables found
-                  </div>
-                )}
               </div>
             </CollapsibleSection>
           </aside>

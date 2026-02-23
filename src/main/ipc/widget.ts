@@ -1,4 +1,4 @@
-import { ipcMain, shell } from 'electron';
+import { ipcMain, screen, shell } from 'electron';
 import { randomUUID } from 'node:crypto';
 
 import type {
@@ -100,10 +100,18 @@ export function registerWidgetIpc(): void {
       const defaultVariables = await readWidgetVariables(widgetName, manifest);
       const mergedVariables = { ...defaultVariables, ...variables };
 
+      const defaultPosition = (): { x: number; y: number } => {
+        const { workArea } = screen.getPrimaryDisplay();
+        return {
+          x: workArea.x + workArea.width - manifest.size.width - 20,
+          y: workArea.y + 20,
+        };
+      };
+
       const instance: WidgetInstance = {
         id: randomUUID(),
         widgetName,
-        position: position ?? { x: 100, y: 100 },
+        position: position ?? defaultPosition(),
         size: manifest.size,
         variables: mergedVariables,
         enabled: true,

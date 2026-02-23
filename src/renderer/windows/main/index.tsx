@@ -10,16 +10,16 @@ import WidgetEditor from './widget-editor';
 import WidgetGrid from './widget-grid';
 
 type MainRoute = 'home' | 'editor';
-type HomeTab = 'active' | 'created';
+type HomeTab = 'available' | 'active';
 
 const HOME_TABS = [
+  { id: 'available', label: 'Available' },
   { id: 'active', label: 'Active' },
-  { id: 'created', label: 'Created' },
 ];
 
 export default function MainWindow() {
   const [route, setRoute] = useState<MainRoute>('home');
-  const [activeTab, setActiveTab] = useState<HomeTab>('active');
+  const [activeTab, setActiveTab] = useState<HomeTab>('available');
   const [editingWidget, setEditingWidget] = useState<WidgetState | null>(null);
   const { widgets, loading, refresh } = useWidgets();
 
