@@ -1,52 +1,81 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Widget</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: transparent;
+      }
+      body {
+        -webkit-app-region: drag;
+      }
+      input,
+      textarea,
+      select,
+      button,
+      a {
+        -webkit-app-region: no-drag;
+      }
+    </style>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Widget</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
-    body { -webkit-app-region: drag; }
-    input, textarea, select, button, a { -webkit-app-region: no-drag; }
-  </style>
-</head>
+  <body>
+    <script>
+      (function () {
+        var payload = null;
 
-<body>
-  <script>
-    (function () {
-      var payload = null;
+        var wigify = {
+          get variables() {
+            return payload ? payload.variables : {};
+          },
+          get instanceId() {
+            return payload ? payload.instanceId : '';
+          },
+          get widgetName() {
+            return payload ? payload.widgetName : '';
+          },
+          refresh: function () {
+            window.location.reload();
+          },
+        };
 
-      var wigify = {
-        get variables() { return payload ? payload.variables : {}; },
-        get instanceId() { return payload ? payload.instanceId : ''; },
-        get widgetName() { return payload ? payload.widgetName : ''; },
-        refresh: function () { window.location.reload(); },
-      };
-
-      Object.defineProperty(window, 'wigify', { value: wigify, writable: false });
-
-      window.ipcRenderer.on('load', function (_, data) {
-        if (data.type !== 'widget' || !data.payload) return;
-        payload = data.payload;
-
-        var source = payload.sourceCode || '';
-        document.body.insertAdjacentHTML('beforeend', source);
-
-        var scripts = document.body.querySelectorAll('script');
-        scripts.forEach(function (original) {
-          var fresh = document.createElement('script');
-          if (original.src) {
-            fresh.src = original.src;
-          } else {
-            fresh.textContent = original.textContent;
-          }
-          original.parentNode.replaceChild(fresh, original);
+        Object.defineProperty(window, 'wigify', {
+          value: wigify,
+          writable: false,
         });
-      });
-    })();
-  </script>
-</body>
 
+        window.ipcRenderer.on('load', function (_, data) {
+          if (data.type !== 'widget' || !data.payload) return;
+          payload = data.payload;
+
+          var source = payload.sourceCode || '';
+          document.body.insertAdjacentHTML('beforeend', source);
+
+          var scripts = document.body.querySelectorAll('script');
+          scripts.forEach(function (original) {
+            var fresh = document.createElement('script');
+            if (original.src) {
+              fresh.src = original.src;
+            } else {
+              fresh.textContent = original.textContent;
+            }
+            original.parentNode.replaceChild(fresh, original);
+          });
+        });
+      })();
+    </script>
+  </body>
 </html>

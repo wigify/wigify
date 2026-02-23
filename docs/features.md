@@ -100,33 +100,51 @@ Widgets are plain HTML files with embedded CSS and JavaScript:
 
 The widget API is available as a global object in widget scripts:
 
-| Property / Method | Description |
-|------|-------------|
-| `wigify.variables` | Object containing all configured variable values |
-| `wigify.instanceId` | The unique instance ID of this widget |
-| `wigify.widgetName` | The widget name |
-| `wigify.refresh()` | Reload the widget |
+| Property / Method   | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| `wigify.variables`  | Object containing all configured variable values |
+| `wigify.instanceId` | The unique instance ID of this widget            |
+| `wigify.widgetName` | The widget name                                  |
+| `wigify.refresh()`  | Reload the widget                                |
 
 ### Variable Types
 
-| Type | Description |
-|------|-------------|
-| `text` | Plain text input |
-| `secret` | Encrypted text (stored securely in system keychain) |
-| `number` | Numeric value |
-| `boolean` | True/false toggle |
+| Type      | Description                                         |
+| --------- | --------------------------------------------------- |
+| `text`    | Plain text input                                    |
+| `secret`  | Encrypted text (stored securely in system keychain) |
+| `number`  | Numeric value                                       |
+| `boolean` | True/false toggle                                   |
 
 ### Widget Templates
 
 Wigify provides templates as starting points for creating new widgets:
 
 #### Blank Template
+
 - Minimal HTML widget with basic styling
 - Perfect for starting from scratch
 
-#### Stat Template  
+#### Stat Template
+
 - Pre-styled widget for displaying a single statistic
 - Great for Grafana metrics, system stats, or any numeric display
+
+### Cursor Dodge
+
+Widgets automatically hide and become click-through when the cursor approaches any widget, allowing you to interact with content behind them without manually moving widgets out of the way. When the cursor moves away, all widgets reappear.
+
+- **Instant hide**: All widgets instantly disappear when the cursor gets within 150px of any widget
+- **Click-through**: Hidden widgets pass mouse events through so you can click on whatever is behind them
+- **Tray toggle**: Use the system tray menu to enable or disable auto-hide. When disabled, widgets stay visible and can be moved freely
+
+### System Tray
+
+Wigify lives in the system tray (menu bar on macOS) for quick access:
+
+- **Auto-hide Widgets**: Toggle cursor dodge on/off (enabled by default)
+- **Show Window**: Bring the main Wigify window to the front
+- **Quit**: Exit the application
 
 ### Main Window
 

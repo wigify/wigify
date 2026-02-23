@@ -11,6 +11,12 @@
     "dist",
     "dist-electron"
   ],
+  "extraResources": [
+    {
+      "from": "src/main/menu/assets",
+      "to": "menu-assets"
+    }
+  ],
   "mac": {
     "target": [
       "dmg"

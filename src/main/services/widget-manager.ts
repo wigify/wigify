@@ -2,6 +2,7 @@ import type { WidgetInstance, WidgetWindowPayload, WindowData } from '@/types';
 
 import { createWindow, Window } from '../lib/window';
 
+import { removeWidgetFromTracking } from './cursor-proximity';
 import {
   readWidgetManifest,
   readWidgetSource,
@@ -77,6 +78,7 @@ export async function spawnWidgetWindow(
 
   window.on('closed', async () => {
     widgetWindows.delete(instance.id);
+    removeWidgetFromTracking(instance.id);
 
     if (isAppQuitting) return;
 
