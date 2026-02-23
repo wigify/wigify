@@ -13,8 +13,8 @@
   ],
   "extraResources": [
     {
-      "from": "src/main/menu/assets",
-      "to": "menu-assets"
+      "from": "src/main/menu/icons",
+      "to": "menu-icons"
     }
   ],
   "mac": {

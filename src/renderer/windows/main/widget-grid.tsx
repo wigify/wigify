@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Folder, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import type { WidgetState } from '@/types';
-import WidgetPreview from '../../components/widget-preview';
+import WidgetPreview from '../../components/widget/widget-preview';
 import { Button } from '../../components/ui/button';
 import {
   Popover,

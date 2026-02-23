@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { Plus } from 'lucide-react';
 import type { WidgetState } from '@/types';
-import TitleBar from '../../components/title-bar';
+import TitleBar from '../../components/shared/title-bar';
 import { Button } from '../../components/ui/button';
 import { useWidgets } from '../../hooks/use-widgets';
 import ActiveWidgets from './active-widgets';

@@ -1,6 +1,6 @@
 import { screen } from 'electron';
 
-import { getAllWidgetWindows } from './widget-manager';
+import { getAllWidgetWindows } from '../widget/manager';
 
 const POLL_INTERVAL_MS = 50;
 const PROXIMITY_THRESHOLD = 150;
@@ -33,7 +33,7 @@ function isPointInsideRect(
 
 function isCursorCloseToAnyWidget(
   cursorPoint: Electron.Point,
-  widgetWindows: Map<string, import('../lib/window').Window>,
+  widgetWindows: Map<string, import('../utils/window').Window>,
 ): boolean {
   for (const [, window] of widgetWindows) {
     if (window.isDestroyed()) continue;

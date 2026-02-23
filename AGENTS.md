@@ -10,35 +10,111 @@
 
 ```
 wigify/
-├── src/
-│   ├── main/           # Electron main process
-│   │   ├── ipc/        # IPC handlers
-│   │   ├── lib/        # Utilities (window management)
-│   │   └── services/   # Business logic (widget fs, bundler, manager)
-│   ├── preload/        # Preload scripts
-│   ├── renderer/       # React renderer
-│   │   ├── components/ # UI components
-│   │   ├── hooks/      # Custom React hooks
-│   │   ├── lib/        # Utilities (cn helper)
-│   │   ├── styles/     # Global CSS
-│   │   └── windows/    # Window-specific pages
-│   ├── types/          # Shared TypeScript types
-│   ├── api/            # Widget API (React context/hooks for widgets)
-│   └── templates/      # Widget templates (blank, stat)
+├── .github/
+│   └── workflows/               # CI/CD pipelines
+├── build/                       # App icons, entitlements, build assets
+├── docs/                        # Project documentation
+├── public/                      # Static assets (images, sounds, etc.)
+├── scripts/                     # Build/release shell scripts
 ├── tests/
-│   └── unit/
-├── docs/
-├── public/
-├── index.html          # Main app HTML entry
-├── widget.html         # Widget HTML entry
+│   ├── helpers/                 # Shared test mocks & utilities
+│   ├── integration/             # Integration tests
+│   └── unit/                    # Unit tests
+│
+├── src/
+│   ├── main/                    # Electron main process
+│   │   ├── main.ts              # App entry point
+│   │   │
+│   │   ├── widget/              # Widget feature module
+│   │   │   ├── index.ts         # Public API for the widget feature
+│   │   │   ├── fs.ts            # Widget filesystem operations
+│   │   │   ├── bundler.ts       # Widget build via bun
+│   │   │   ├── manager.ts       # Widget window lifecycle
+│   │   │   ├── context.tsx      # Widget React context
+│   │   │   ├── provider.tsx     # Widget React provider
+│   │   │   ├── hooks.ts         # Widget React hooks (for widget developers)
+│   │   │   └── ipc/             # IPC handlers scoped to widget feature
+│   │   │       └── index.ts
+│   │   │
+│   │   ├── menu/                # System tray, menus, icons
+│   │   │   ├── index.ts
+│   │   │   ├── tray.ts
+│   │   │   └── icons/
+│   │   │
+│   │   ├── system/              # OS-level: cursor proximity, secrets
+│   │   │   ├── index.ts
+│   │   │   ├── cursor-proximity.ts
+│   │   │   └── secrets.ts
+│   │   │
+│   │   └── utils/               # Main-process utilities
+│   │       └── window.ts        # Window class for BrowserWindow creation
+│   │
+│   ├── preload/
+│   │   └── preload.ts           # IPC bridge (contextBridge)
+│   │
+│   ├── renderer/                # React frontend
+│   │   ├── App.tsx              # Root component
+│   │   ├── main.tsx             # Renderer entry point
+│   │   │
+│   │   ├── components/
+│   │   │   ├── ui/              # Reusable UI primitives (Shadcn-style)
+│   │   │   │   ├── button.tsx
+│   │   │   │   ├── command.tsx
+│   │   │   │   ├── popover.tsx
+│   │   │   │   └── ...
+│   │   │   │
+│   │   │   ├── shared/          # Shared composite components
+│   │   │   │   ├── title-bar.tsx
+│   │   │   │   └── collapsible-section.tsx
+│   │   │   │
+│   │   │   └── widget/          # Widget feature components
+│   │   │       ├── monaco-editor.tsx
+│   │   │       └── widget-preview.tsx
+│   │   │
+│   │   ├── hooks/               # Global custom React hooks
+│   │   ├── lib/                 # General utilities (e.g., cn())
+│   │   ├── styles/              # CSS files (Tailwind base, app)
+│   │   ├── utils/               # Renderer-specific utilities
+│   │   └── windows/             # Top-level window components
+│   │       └── main/
+│   │
+│   ├── templates/               # Widget starter templates
+│   │
+│   └── types/                   # Shared types (main + renderer)
+│       ├── index.ts
+│       ├── widget.ts
+│       ├── window.ts
+│       └── electron.ts
+│
+├── .eslintrc.cjs
+├── .prettierrc
+├── .gitignore
+├── index.html                   # Electron renderer HTML entry
+├── widget.html                  # Widget HTML entry
 ├── package.json
 ├── tsconfig.json
+├── tsconfig.node.json
 ├── vite.config.mts
 ├── vitest.config.ts
-├── electron-builder.json5
-├── .eslintrc.cjs
-└── .prettierrc
+└── electron-builder.json5
 ```
+
+### Key Patterns
+
+| Pattern               | Description                                                      |
+| --------------------- | ---------------------------------------------------------------- |
+| Feature folders       | Each feature gets its own folder with an index.ts entry point    |
+| IPC scoping           | IPC handlers live inside their feature folder under ipc/         |
+| src/types/            | Shared types accessible by both main and renderer processes      |
+| components/ui/        | Atomic, reusable UI primitives (Shadcn pattern)                  |
+| components/shared/    | Shared composite components used across features                 |
+| components/<feature>/ | Feature-specific components                                      |
+| renderer/windows/     | One folder per Electron BrowserWindow                            |
+| renderer/hooks/       | Global hooks shared across features                              |
+| preload/              | Single preload file as the IPC bridge                            |
+| tests/ at root        | Tests mirror src/ but live outside it, split by unit/integration |
+| scripts/              | Build, release, and utility shell scripts                        |
+| public/               | Static assets served as-is                                       |
 
 ### Commands
 
@@ -78,11 +154,11 @@ Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config),
 
 - **Desktop App**: Electron main process, preload, and React renderer in `src/`
 - **Shared Types**: `src/types/` - TypeScript types, import with `import type { WindowConfig } from '@/types'`
-- **Widget API**: `src/api/` - React context and hooks for widget development
+- **Widget API**: `src/main/widget/` - React context, provider, and hooks for widget development (context.tsx, provider.tsx, hooks.ts)
 - **Templates**: `src/templates/` - Widget starter templates
-- **IPC**: Use `ipcMain.on` (main) / `ipcRenderer.send` (renderer) for process communication
+- **IPC**: Use `ipcMain.on` (main) / `ipcRenderer.send` (renderer) for process communication. IPC handlers are scoped inside their feature folder under `ipc/`.
 - **State**: Local hooks (`useState`, custom hooks in `src/renderer/hooks/`) - no global state library
-- **Windows**: Use the `Window` class from `src/main/lib/window.ts` for all window creation. It provides consistent styling, macOS vibrancy, and platform-specific defaults. Use `createWindow()` helper or instantiate `new Window(config)` directly.
+- **Windows**: Use the `Window` class from `src/main/utils/window.ts` for all window creation. It provides consistent styling, macOS vibrancy, and platform-specific defaults. Use `createWindow()` helper or instantiate `new Window(config)` directly.
 
 ## Performance & Design
 

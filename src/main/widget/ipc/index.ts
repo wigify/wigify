@@ -8,7 +8,7 @@ import type {
   WidgetVariableValues,
 } from '@/types';
 
-import { buildWidget } from '../services/widget-bundler';
+import { buildWidget } from '../bundler';
 import {
   addWidgetInstance,
   createWidget,
@@ -27,12 +27,9 @@ import {
   updateWidgetSource,
   widgetExists,
   writeWidgetVariables,
-} from '../services/widget-fs';
-import type { CreateWidgetOptions } from '../services/widget-fs';
-import {
-  closeWidgetWindow,
-  spawnWidgetWindow,
-} from '../services/widget-manager';
+} from '../fs';
+import type { CreateWidgetOptions } from '../fs';
+import { closeWidgetWindow, spawnWidgetWindow } from '../manager';
 
 export function registerWidgetIpc(): void {
   ipcMain.handle('widget:list', async (): Promise<WidgetState[]> => {

@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { Monitor, Trash2 } from 'lucide-react';
 import type { WidgetInstance, WidgetState } from '@/types';
-import WidgetPreview from '../../components/widget-preview';
+import WidgetPreview from '../../components/widget/widget-preview';
 import { Button } from '../../components/ui/button';
 import { useWidgets } from '../../hooks/use-widgets';
 

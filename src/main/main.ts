@@ -1,14 +1,15 @@
 import { app, BrowserWindow } from 'electron';
 
-import { registerWidgetIpc } from './ipc/widget';
-import { createWindow, Window } from './lib/window';
-import { startCursorProximityTracking } from './services/cursor-proximity';
-import { createTray } from './services/tray';
+import { createTray } from './menu';
+import { startCursorProximityTracking } from './system';
+import { createWindow, Window } from './utils/window';
 import {
   ensureConfigDirectories,
   getEnabledWidgetInstances,
-} from './services/widget-fs';
-import { setAppQuitting, spawnWidgetWindow } from './services/widget-manager';
+  registerWidgetIpc,
+  setAppQuitting,
+  spawnWidgetWindow,
+} from './widget';
 
 export let mainWindow: Window | null = null;
 

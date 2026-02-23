@@ -1,13 +1,13 @@
 import type { WidgetInstance, WidgetWindowPayload, WindowData } from '@/types';
 
-import { createWindow, Window } from '../lib/window';
+import { createWindow, Window } from '../utils/window';
+import { removeWidgetFromTracking } from '../system/cursor-proximity';
 
-import { removeWidgetFromTracking } from './cursor-proximity';
 import {
   readWidgetManifest,
   readWidgetSource,
   removeWidgetInstance,
-} from './widget-fs';
+} from './fs';
 
 const widgetWindows = new Map<string, Window>();
 let isAppQuitting = false;

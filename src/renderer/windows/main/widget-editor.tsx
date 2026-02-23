@@ -26,9 +26,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '../../components/ui/popover';
-import MonacoEditor from '../../components/monaco-editor';
-import WidgetPreview from '../../components/widget-preview';
-import CollapsibleSection from '../../components/collapsible-section';
+import MonacoEditor from '../../components/widget/monaco-editor';
+import WidgetPreview from '../../components/widget/widget-preview';
+import CollapsibleSection from '../../components/shared/collapsible-section';
 import { useLocalStorage } from '../../hooks/use-local-storage';
 import { useWidgets } from '../../hooks/use-widgets';
 import { cn } from '../../lib/utils';

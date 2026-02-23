@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 
 import type { WidgetBuildResult } from '@/types';
 
-import { getWidgetLocation } from './widget-fs';
+import { getWidgetLocation } from './fs';
 
 const execAsync = promisify(exec);
 

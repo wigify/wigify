@@ -6,7 +6,7 @@ import {
   isTrackingActive,
   startCursorProximityTracking,
   stopCursorProximityTracking,
-} from './cursor-proximity';
+} from '../system/cursor-proximity';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const IS_DEV = !!process.env['VITE_DEV_SERVER_URL'];
@@ -16,10 +16,10 @@ let tray: Tray | null = null;
 
 function getTrayIconPath(): string {
   if (IS_DEV) {
-    return path.join(APP_ROOT, 'src/main/menu/assets/iconTemplate.png');
+    return path.join(APP_ROOT, 'src/main/menu/icons/iconTemplate.png');
   }
 
-  return path.join(process.resourcesPath, 'menu-assets/iconTemplate.png');
+  return path.join(process.resourcesPath, 'menu-icons/iconTemplate.png');
 }
 
 function buildContextMenu(): Menu {
