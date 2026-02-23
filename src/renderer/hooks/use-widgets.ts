@@ -134,6 +134,15 @@ export function useWidgets() {
     [fetchWidgets],
   );
 
+  const updateWidgetSource = useCallback(
+    async (widgetName: string, code: string): Promise<void> => {
+      if (!ipc()) throw new Error('IPC not available');
+      await ipc().invoke('widget:update-source', widgetName, code);
+      await fetchWidgets();
+    },
+    [fetchWidgets],
+  );
+
   const deleteWidget = useCallback(
     async (widgetName: string): Promise<void> => {
       if (!ipc()) return;
@@ -164,6 +173,7 @@ export function useWidgets() {
     spawnWidget,
     closeWidget,
     createWidget,
+    updateWidgetSource,
     deleteWidget,
     checkWidgetExists,
   };

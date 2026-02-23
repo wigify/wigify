@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Plus } from 'lucide-react';
+import type { WidgetState } from '@/types';
 import TitleBar from '../../components/title-bar';
 import { Button } from '../../components/ui/button';
 import { useWidgets } from '../../hooks/use-widgets';
 import ActiveWidgets from './active-widgets';
-import AddWidgetPage from './add-widget';
 import EmptyPage from './empty';
+import WidgetEditor from './widget-editor';
 import WidgetGrid from './widget-grid';
 
-type MainRoute = 'home' | 'add-widget';
+type MainRoute = 'home' | 'editor';
 type HomeTab = 'active' | 'created';
 
 const HOME_TABS = [
@@ -19,6 +20,7 @@ const HOME_TABS = [
 export default function MainWindow() {
   const [route, setRoute] = useState<MainRoute>('home');
   const [activeTab, setActiveTab] = useState<HomeTab>('active');
+  const [editingWidget, setEditingWidget] = useState<WidgetState | null>(null);
   const { widgets, loading, refresh } = useWidgets();
 
   const handleSave = () => {
@@ -26,9 +28,23 @@ export default function MainWindow() {
     setRoute('home');
   };
 
-  if (route === 'add-widget') {
+  const handleAddWidget = useCallback(() => {
+    setEditingWidget(null);
+    setRoute('editor');
+  }, []);
+
+  const handleEditWidget = useCallback((widget: WidgetState) => {
+    setEditingWidget(widget);
+    setRoute('editor');
+  }, []);
+
+  if (route === 'editor') {
     return (
-      <AddWidgetPage onBack={() => setRoute('home')} onSave={handleSave} />
+      <WidgetEditor
+        widget={editingWidget ?? undefined}
+        onBack={() => setRoute('home')}
+        onSave={handleSave}
+      />
     );
   }
 
@@ -41,7 +57,7 @@ export default function MainWindow() {
   }
 
   if (widgets.length === 0) {
-    return <EmptyPage onAddWidget={() => setRoute('add-widget')} />;
+    return <EmptyPage onAddWidget={handleAddWidget} />;
   }
 
   return (
@@ -55,13 +71,17 @@ export default function MainWindow() {
             variant="ghost"
             size="icon"
             className="h-7 w-7"
-            onClick={() => setRoute('add-widget')}
+            onClick={handleAddWidget}
           >
             <Plus className="text-muted-foreground h-3.5 w-3.5" />
           </Button>
         }
       />
-      {activeTab === 'active' ? <ActiveWidgets /> : <WidgetGrid />}
+      {activeTab === 'active' ? (
+        <ActiveWidgets />
+      ) : (
+        <WidgetGrid onEditWidget={handleEditWidget} />
+      )}
     </>
   );
 }

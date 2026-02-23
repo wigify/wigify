@@ -24,6 +24,7 @@ import {
   readWidgetVariables,
   removeWidgetInstance,
   updateWidgetInstance,
+  updateWidgetSource,
   widgetExists,
   writeWidgetVariables,
 } from '../services/widget-fs';
@@ -187,6 +188,13 @@ export function registerWidgetIpc(): void {
         closeWidgetWindow(instance.id);
       }
       await deleteWidget(widgetName);
+    },
+  );
+
+  ipcMain.handle(
+    'widget:update-source',
+    async (_, widgetName: string, code: string): Promise<void> => {
+      await updateWidgetSource(widgetName, code);
     },
   );
 

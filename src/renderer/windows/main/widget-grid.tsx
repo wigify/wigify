@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Folder, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import { Folder, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import type { WidgetState } from '@/types';
 import WidgetPreview from '../../components/widget-preview';
 import { Button } from '../../components/ui/button';
@@ -13,6 +13,7 @@ import { useWidgets } from '../../hooks/use-widgets';
 interface WidgetCardProps {
   widget: WidgetState;
   onAddToScreen: () => void;
+  onEdit: () => void;
   onRemove: () => void;
   onOpenFolder: () => void;
 }
@@ -20,6 +21,7 @@ interface WidgetCardProps {
 function WidgetCard({
   widget,
   onAddToScreen,
+  onEdit,
   onRemove,
   onOpenFolder,
 }: WidgetCardProps) {
@@ -56,6 +58,13 @@ function WidgetCard({
           </PopoverTrigger>
           <PopoverContent className="w-36 p-1" align="end">
             <button
+              onClick={onEdit}
+              className="text-foreground hover:bg-accent flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs"
+            >
+              <Pencil className="h-3 w-3" />
+              Edit
+            </button>
+            <button
               onClick={onOpenFolder}
               className="text-foreground hover:bg-accent flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-xs"
             >
@@ -76,7 +85,11 @@ function WidgetCard({
   );
 }
 
-export default function WidgetGrid() {
+interface WidgetGridProps {
+  onEditWidget: (widget: WidgetState) => void;
+}
+
+export default function WidgetGrid({ onEditWidget }: WidgetGridProps) {
   const { widgets, deleteWidget, openWidgetFolder, addWidgetToScreen } =
     useWidgets();
 
@@ -109,6 +122,7 @@ export default function WidgetGrid() {
             key={widget.manifest.name}
             widget={widget}
             onAddToScreen={() => handleAddToScreen(widget.manifest.name)}
+            onEdit={() => onEditWidget(widget)}
             onRemove={() => handleRemove(widget)}
             onOpenFolder={() => handleOpenFolder(widget)}
           />

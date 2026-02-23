@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { templates } from '@/templates';
 import type { Template } from '@/templates';
+import type { WidgetState } from '@/types';
 import { Button } from '../../components/ui/button';
 import {
   Command,
@@ -41,7 +42,8 @@ interface SidebarSections {
   variables: boolean;
 }
 
-interface AddWidgetPageProps {
+interface WidgetEditorProps {
+  widget?: WidgetState;
   onBack: () => void;
   onSave?: () => void;
 }
@@ -69,22 +71,28 @@ const DEFAULT_SECTIONS: SidebarSections = {
 
 const WIDGET_NAME_REGEX = /^[a-z][a-z0-9-]*$/;
 
-export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
+export default function WidgetEditor({
+  widget,
+  onBack,
+  onSave,
+}: WidgetEditorProps) {
+  const isEditing = !!widget;
+
   const [query, setQuery] = useState('');
   const [pendingTemplate, setPendingTemplate] = useState<Template | null>(null);
-  const [code, setCode] = useState(DEFAULT_TEMPLATE.code);
+  const [code, setCode] = useState(widget?.sourceCode ?? DEFAULT_TEMPLATE.code);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [comboboxOpen, setComboboxOpen] = useState(false);
   const [sections, setSections] = useLocalStorage<SidebarSections>(
-    'add-widget:sidebar-sections',
+    'widget-editor:sidebar-sections',
     DEFAULT_SECTIONS,
   );
 
-  const [widgetName, setWidgetName] = useState('');
+  const [widgetName, setWidgetName] = useState(widget?.manifest.name ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { createWidget, addWidgetToScreen } = useWidgets();
+  const { createWidget, updateWidgetSource, addWidgetToScreen } = useWidgets();
 
   const toggleSection = (section: keyof SidebarSections) => {
     setSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -92,17 +100,13 @@ export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
 
   const handleTemplateSelect = (templateName: string) => {
     const template = templates.find(t => t.name === templateName);
-    if (!template) {
-      return;
-    }
+    if (!template) return;
     setPendingTemplate(template);
     setComboboxOpen(false);
   };
 
   const handleApplyTemplate = () => {
-    if (!pendingTemplate) {
-      return;
-    }
+    if (!pendingTemplate) return;
     setCode(pendingTemplate.code);
     setPendingTemplate(null);
   };
@@ -112,8 +116,12 @@ export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
   }, [widgetName]);
 
   const canSave = useMemo(() => {
-    return isValidName && code.trim().length > 0 && !saving;
-  }, [isValidName, code, saving]);
+    if (saving || code.trim().length === 0) return false;
+
+    if (isEditing) return code !== widget.sourceCode;
+
+    return isValidName;
+  }, [saving, code, isEditing, widget, isValidName]);
 
   const handleSave = useCallback(async () => {
     if (!canSave) return;
@@ -122,20 +130,33 @@ export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
     setError(null);
 
     try {
-      await createWidget({
-        name: widgetName,
-        code,
-        size: DEFAULT_TEMPLATE.manifest.size,
-      });
-
-      await addWidgetToScreen(widgetName);
+      if (isEditing) {
+        await updateWidgetSource(widget.manifest.name, code);
+      } else {
+        await createWidget({
+          name: widgetName,
+          code,
+          size: DEFAULT_TEMPLATE.manifest.size,
+        });
+        await addWidgetToScreen(widgetName);
+      }
       onSave?.();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save widget');
     } finally {
       setSaving(false);
     }
-  }, [canSave, widgetName, code, createWidget, addWidgetToScreen, onSave]);
+  }, [
+    canSave,
+    isEditing,
+    widget,
+    widgetName,
+    code,
+    createWidget,
+    updateWidgetSource,
+    addWidgetToScreen,
+    onSave,
+  ]);
 
   const isMac = useMemo(() => {
     return navigator.platform.toLowerCase().includes('mac');
@@ -144,9 +165,7 @@ export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
   const filteredVariables = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    if (!normalizedQuery) {
-      return VARIABLE_ITEMS;
-    }
+    if (!normalizedQuery) return VARIABLE_ITEMS;
 
     return VARIABLE_ITEMS.filter(variable => {
       return (
@@ -156,6 +175,8 @@ export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
       );
     });
   }, [query]);
+
+  const title = isEditing ? widget.manifest.title : 'Add Widget';
 
   return (
     <div className="bg-background flex h-screen w-screen flex-col overflow-hidden">
@@ -174,9 +195,7 @@ export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
           >
             <ChevronLeft className="text-muted-foreground h-3.5 w-3.5" />
           </Button>
-          <span className="text-foreground text-sm font-medium">
-            Add Widget
-          </span>
+          <span className="text-foreground text-sm font-medium">{title}</span>
         </div>
 
         <div className="titlebar-no-drag flex items-center gap-1">

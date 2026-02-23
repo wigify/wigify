@@ -362,6 +362,14 @@ export async function deleteWidget(name: string): Promise<void> {
   await fs.rm(location.path, { recursive: true, force: true });
 }
 
+export async function updateWidgetSource(
+  widgetName: string,
+  code: string,
+): Promise<void> {
+  const sourcePath = await getWidgetSourcePath(widgetName);
+  await fs.writeFile(sourcePath, code);
+}
+
 export async function widgetExists(name: string): Promise<boolean> {
   const widgetDir = path.join(getUserWidgetsDir(), name);
   try {
