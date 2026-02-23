@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import type {
   WidgetBuildResult,
@@ -9,10 +16,43 @@ import type {
 
 const ipc = () => window.ipcRenderer;
 
-export function useWidgets() {
+interface WidgetStore {
+  widgets: WidgetState[];
+  loading: boolean;
+  error: string | null;
+  refresh: () => Promise<void>;
+  buildWidget: (widgetName: string) => Promise<WidgetBuildResult>;
+  addWidgetToScreen: (
+    widgetName: string,
+    variables?: WidgetVariableValues,
+    position?: { x: number; y: number },
+  ) => Promise<WidgetInstance>;
+  removeWidgetFromScreen: (instanceId: string) => Promise<void>;
+  updateWidgetVariables: (
+    widgetName: string,
+    variables: WidgetVariableValues,
+  ) => Promise<void>;
+  openWidgetFolder: (widgetName: string) => Promise<void>;
+  spawnWidget: (instanceId: string) => Promise<void>;
+  closeWidget: (instanceId: string) => Promise<void>;
+  createWidget: (options: {
+    name: string;
+    code: string;
+    size: { width: number; height: number };
+  }) => Promise<void>;
+  updateWidgetSource: (widgetName: string, code: string) => Promise<void>;
+  deleteWidget: (widgetName: string) => Promise<void>;
+  checkWidgetExists: (name: string) => Promise<boolean>;
+  arrangeWidgets: () => Promise<void>;
+}
+
+export const WidgetStoreContext = createContext<WidgetStore | null>(null);
+
+export function useWidgetStore(): WidgetStore {
   const [widgets, setWidgets] = useState<WidgetState[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const initialFetchDone = useRef(false);
 
   const fetchWidgets = useCallback(async () => {
     if (!ipc()) {
@@ -22,10 +62,13 @@ export function useWidgets() {
     }
 
     try {
-      setLoading(true);
+      if (!initialFetchDone.current) {
+        setLoading(true);
+      }
       setError(null);
       const result = await ipc().invoke<WidgetState[]>('widget:list');
       setWidgets(result);
+      initialFetchDone.current = true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load widgets');
     } finally {
@@ -39,26 +82,25 @@ export function useWidgets() {
     const renderer = ipc();
     if (!renderer) return;
 
-    const handleRemoved = () => {
+    const handleChanged = () => {
       fetchWidgets();
     };
-    renderer.on('widget:removed', handleRemoved);
+
+    renderer.on('widget:changed', handleChanged);
+    renderer.on('widget:removed', handleChanged);
+
     return () => {
-      renderer.off('widget:removed', handleRemoved);
+      renderer.off('widget:changed', handleChanged);
+      renderer.off('widget:removed', handleChanged);
     };
   }, [fetchWidgets]);
 
   const buildWidget = useCallback(
     async (widgetName: string): Promise<WidgetBuildResult> => {
       if (!ipc()) throw new Error('IPC not available');
-      const result = await ipc().invoke<WidgetBuildResult>(
-        'widget:build',
-        widgetName,
-      );
-      await fetchWidgets();
-      return result;
+      return ipc().invoke<WidgetBuildResult>('widget:build', widgetName);
     },
-    [fetchWidgets],
+    [],
   );
 
   const addWidgetToScreen = useCallback(
@@ -75,10 +117,9 @@ export function useWidgets() {
         variables,
       );
       await ipc().invoke('widget:spawn', instance.id);
-      await fetchWidgets();
       return instance;
     },
-    [fetchWidgets],
+    [],
   );
 
   const removeWidgetFromScreen = useCallback(
@@ -86,9 +127,8 @@ export function useWidgets() {
       if (!ipc()) return;
       await ipc().invoke('widget:close', instanceId);
       await ipc().invoke('widget:remove-instance', instanceId);
-      await fetchWidgets();
     },
-    [fetchWidgets],
+    [],
   );
 
   const updateWidgetVariables = useCallback(
@@ -98,9 +138,8 @@ export function useWidgets() {
     ): Promise<void> => {
       if (!ipc()) return;
       await ipc().invoke('widget:set-variables', widgetName, variables);
-      await fetchWidgets();
     },
-    [fetchWidgets],
+    [],
   );
 
   const openWidgetFolder = useCallback(
@@ -129,27 +168,24 @@ export function useWidgets() {
     }): Promise<void> => {
       if (!ipc()) throw new Error('IPC not available');
       await ipc().invoke('widget:create', options);
-      await fetchWidgets();
     },
-    [fetchWidgets],
+    [],
   );
 
   const updateWidgetSource = useCallback(
     async (widgetName: string, code: string): Promise<void> => {
       if (!ipc()) throw new Error('IPC not available');
       await ipc().invoke('widget:update-source', widgetName, code);
-      await fetchWidgets();
     },
-    [fetchWidgets],
+    [],
   );
 
   const deleteWidget = useCallback(
     async (widgetName: string): Promise<void> => {
       if (!ipc()) return;
       await ipc().invoke('widget:delete', widgetName);
-      await fetchWidgets();
     },
-    [fetchWidgets],
+    [],
   );
 
   const checkWidgetExists = useCallback(
@@ -163,8 +199,7 @@ export function useWidgets() {
   const arrangeWidgets = useCallback(async (): Promise<void> => {
     if (!ipc()) return;
     await ipc().invoke('widget:arrange');
-    await fetchWidgets();
-  }, [fetchWidgets]);
+  }, []);
 
   return {
     widgets,
@@ -184,4 +219,12 @@ export function useWidgets() {
     checkWidgetExists,
     arrangeWidgets,
   };
+}
+
+export function useWidgets(): WidgetStore {
+  const store = useContext(WidgetStoreContext);
+  if (!store) {
+    throw new Error('useWidgets must be used within a WidgetStoreProvider');
+  }
+  return store;
 }

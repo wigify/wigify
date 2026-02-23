@@ -32,6 +32,13 @@ import type { CreateWidgetOptions } from '@/main/widget/fs';
 import { arrangeAllWidgets, findNextGridPosition } from '@/main/widget/grid';
 import { closeWidgetWindow, spawnWidgetWindow } from '@/main/widget/manager';
 
+async function notifyWidgetChanged(): Promise<void> {
+  const { mainWindow } = await import('@/main/main');
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.getBrowserWindow().webContents.send('widget:changed');
+  }
+}
+
 export function registerWidgetIpc(): void {
   ipcMain.handle('widget:list', async (): Promise<WidgetState[]> => {
     return listAllWidgets();
@@ -47,7 +54,9 @@ export function registerWidgetIpc(): void {
   ipcMain.handle(
     'widget:build',
     async (_, widgetName: string): Promise<WidgetBuildResult> => {
-      return buildWidget(widgetName);
+      const result = await buildWidget(widgetName);
+      await notifyWidgetChanged();
+      return result;
     },
   );
 
@@ -79,6 +88,7 @@ export function registerWidgetIpc(): void {
         throw new Error(`Widget manifest not found: ${widgetName}`);
       }
       await writeWidgetVariables(widgetName, manifest, variables);
+      await notifyWidgetChanged();
     },
   );
 
@@ -112,6 +122,7 @@ export function registerWidgetIpc(): void {
       };
 
       await addWidgetInstance(instance);
+      await notifyWidgetChanged();
       return instance;
     },
   );
@@ -120,6 +131,7 @@ export function registerWidgetIpc(): void {
     'widget:remove-instance',
     async (_, instanceId: string): Promise<void> => {
       await removeWidgetInstance(instanceId);
+      await notifyWidgetChanged();
     },
   );
 
@@ -156,6 +168,7 @@ export function registerWidgetIpc(): void {
       if (!instance) return false;
 
       const window = await spawnWidgetWindow(instance);
+      await notifyWidgetChanged();
       return window !== null;
     },
   );
@@ -164,6 +177,7 @@ export function registerWidgetIpc(): void {
     'widget:close',
     async (_, instanceId: string): Promise<void> => {
       closeWidgetWindow(instanceId);
+      await notifyWidgetChanged();
     },
   );
 
@@ -178,6 +192,7 @@ export function registerWidgetIpc(): void {
     'widget:create',
     async (_, options: CreateWidgetOptions): Promise<void> => {
       await createWidget(options);
+      await notifyWidgetChanged();
     },
   );
 
@@ -190,6 +205,7 @@ export function registerWidgetIpc(): void {
         closeWidgetWindow(instance.id);
       }
       await deleteWidget(widgetName);
+      await notifyWidgetChanged();
     },
   );
 
@@ -197,6 +213,7 @@ export function registerWidgetIpc(): void {
     'widget:update-source',
     async (_, widgetName: string, code: string): Promise<void> => {
       await updateWidgetSource(widgetName, code);
+      await notifyWidgetChanged();
     },
   );
 
@@ -206,5 +223,6 @@ export function registerWidgetIpc(): void {
 
   ipcMain.handle('widget:arrange', async (): Promise<void> => {
     await arrangeAllWidgets();
+    await notifyWidgetChanged();
   });
 }

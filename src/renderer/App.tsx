@@ -1,8 +1,21 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 
 import type { WindowData } from '@/types';
+import {
+  WidgetStoreContext,
+  useWidgetStore,
+} from '@/renderer/hooks/use-widgets';
 
 const MainWindow = lazy(() => import('./windows/main'));
+
+function WidgetStoreProvider({ children }: { children: React.ReactNode }) {
+  const store = useWidgetStore();
+  return (
+    <WidgetStoreContext.Provider value={store}>
+      {children}
+    </WidgetStoreContext.Provider>
+  );
+}
 
 function LoadingScreen() {
   return (
@@ -59,7 +72,11 @@ export default function App() {
 
   return (
     <Suspense fallback={<LoadingScreen />}>
-      {windowData.type === 'main' && <MainWindow />}
+      {windowData.type === 'main' && (
+        <WidgetStoreProvider>
+          <MainWindow />
+        </WidgetStoreProvider>
+      )}
     </Suspense>
   );
 }
