@@ -6,40 +6,49 @@
 - Windows
 - Linux
 
-## Monorepo Structure
-
-This project uses Turborepo for monorepo management with the following packages:
+## Project Structure
 
 ```
 wigify/
-├── packages/
-│   ├── desktop/      # @wigify/desktop - Main Electron app
-│   │   ├── src/
-│   │   │   ├── main/       # Electron main process
-│   │   │   ├── preload/    # Preload scripts
-│   │   │   └── renderer/   # React renderer
-│   │   └── tests/
-│   ├── types/        # @wigify/types - Shared TypeScript types
-│   │   └── src/
-│   └── config/       # @wigify/config - Shared ESLint, Prettier, TSConfig
-├── turbo.json
-└── package.json
+├── src/
+│   ├── main/           # Electron main process
+│   │   ├── ipc/        # IPC handlers
+│   │   ├── lib/        # Utilities (window management)
+│   │   └── services/   # Business logic (widget fs, bundler, manager)
+│   ├── preload/        # Preload scripts
+│   ├── renderer/       # React renderer
+│   │   ├── components/ # UI components
+│   │   ├── hooks/      # Custom React hooks
+│   │   ├── lib/        # Utilities (cn helper)
+│   │   ├── styles/     # Global CSS
+│   │   └── windows/    # Window-specific pages
+│   ├── types/          # Shared TypeScript types
+│   ├── api/            # Widget API (React context/hooks for widgets)
+│   └── templates/      # Widget templates (blank, stat)
+├── tests/
+│   └── unit/
+├── docs/
+├── public/
+├── index.html          # Main app HTML entry
+├── widget.html         # Widget HTML entry
+├── package.json
+├── tsconfig.json
+├── vite.config.mts
+├── vitest.config.ts
+├── electron-builder.json5
+├── .eslintrc.cjs
+└── .prettierrc
 ```
 
-### Package Dependencies
-
-- `@wigify/desktop` depends on `@wigify/types`
-- `@wigify/types` is standalone (shared types)
-
-### Workspace Commands
+### Commands
 
 Run from root:
 
 - `bun dev` - Start desktop app in dev mode
-- `bun build` - Build all packages
-- `bun test` - Run tests across all packages
-- `bun lint` - Lint all packages
-- `bun format` - Format all packages
+- `bun build` - Build and package the app
+- `bun test` - Run tests
+- `bun lint` - Lint the project
+- `bun format` - Format the project
 - `bun pre-commit` - Run lint, test, and format
 
 ## Tests
@@ -50,14 +59,14 @@ Write tests for new features and bug fixes according to the following configurat
 - **Renderer**: Not implemented yet
 - **Coverage**: `bun coverage` - reports in `coverage/` folder
 
-Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config), class-based mocks for constructors, dynamic imports (await import()) after vi.resetModules() to get fresh module instances with updated mocks, and are organized in `packages/desktop/tests/unit/` or `packages/desktop/tests/integration/`
+Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config), class-based mocks for constructors, dynamic imports (await import()) after vi.resetModules() to get fresh module instances with updated mocks, and are organized in `tests/unit/` or `tests/integration/`
 
 ## Code Style
 
 - **Formatting**: Prettier (semicolons, single quotes, 80 width, 2 spaces, arrowParens: avoid) + Tailwind plugin - Use `bun format`
 - **Linting**: ESLint - Use `bun lint` to make sure no lint errors
 - **Imports**: Group by external → components → hooks → types → utils. Use `type` for type-only imports (`import type { ToolType }`)
-- **Types**: Store shared types in `packages/types/src/`. Import with `import type { X } from '@wigify/types'`
+- **Types**: Store shared types in `src/types/`. Import with `import type { X } from '@/types'`
 - **Naming**: kebab-case (components), camelCase (functions/vars), SCREAMING_SNAKE_CASE (constants like `MACOS_COLORS`)
 - **Components**: Export as default, define interfaces inline. Prefer small, reusable components over monolithic files
 - **React**: Use functional components, hooks (`useCallback` for event handlers), avoid unnecessary re-renders
@@ -67,12 +76,13 @@ Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config),
 
 ## Architecture
 
-- **Monorepo**: Turborepo with Bun workspaces
-- **Desktop App**: `packages/desktop/` - Electron main process, preload, and React renderer
-- **Shared Types**: `packages/types/` - TypeScript types, import with `import type { WindowConfig } from '@wigify/types'`
+- **Desktop App**: Electron main process, preload, and React renderer in `src/`
+- **Shared Types**: `src/types/` - TypeScript types, import with `import type { WindowConfig } from '@/types'`
+- **Widget API**: `src/api/` - React context and hooks for widget development
+- **Templates**: `src/templates/` - Widget starter templates
 - **IPC**: Use `ipcMain.on` (main) / `ipcRenderer.send` (renderer) for process communication
-- **State**: Local hooks (`useState`, custom hooks in `packages/desktop/src/renderer/hooks/`) - no global state library
-- **Windows**: Use the `Window` class from `packages/desktop/src/main/lib/window.ts` for all window creation. It provides consistent styling, macOS vibrancy, and platform-specific defaults. Use `createWindow()` helper or instantiate `new Window(config)` directly.
+- **State**: Local hooks (`useState`, custom hooks in `src/renderer/hooks/`) - no global state library
+- **Windows**: Use the `Window` class from `src/main/lib/window.ts` for all window creation. It provides consistent styling, macOS vibrancy, and platform-specific defaults. Use `createWindow()` helper or instantiate `new Window(config)` directly.
 
 ## Performance & Design
 
@@ -90,7 +100,7 @@ Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config),
 - Prefer tailwind's built-in classes over custom sizes like px[20px]
 - Try to create re-usable components instead of writing big chunks of code
 - Be mindful about app size and performance and memory and cpu usage.
-- Use types and interfaces and store them in `packages/types/src/` so they can be shared across all packages.
+- Use types and interfaces and store them in `src/types/` so they can be shared across the app.
 - Learn from project's structure and implement new features in the same way.
 - Break code into smaller components and files.
 - When implementing a feature that can also be configurable, ask user's opinion to make it configurable in the app settings or not.
@@ -99,7 +109,7 @@ Tests use Vitest with vi.mock() for mocking modules (electron, AWS SDK, config),
 - Avoid creating big files and components. Instead, modularize and break them into smaller pieces.
 - NEVER NEVER NEVER code comment!
 - Native functionality is provided by a unified Swift daemon (`wigify-daemon`). Build when finishing the task with `./scripts/build-daemon.sh` for universal architecture (arm64 + x86_64).
-- When adding new native modules, add them to `packages/desktop/src/main/daemon/Modules/` and register in `main.swift`.
+- When adding new native modules, add them to `src/main/daemon/Modules/` and register in `main.swift`.
 - When adding assets to the project like images, icons, sounds, etc, make sure you also consider them for production build and packing and notarizing to work on packaged app too.
 - Don't patch symptoms! Fix the root cause of the issues.
 - Use early returns to reduce nesting

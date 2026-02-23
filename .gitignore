@@ -30,6 +30,3 @@ coverage
 *.njsproj
 *.sln
 *.sw?
-
-# Turbo
-.turbo
