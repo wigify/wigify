@@ -29,10 +29,113 @@
       a {
         -webkit-app-region: no-drag;
       }
+      .wigify-titlebar {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 28px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0 4px !important;
+        background: rgba(23, 23, 23, 0.75) !important;
+        z-index: 2147483647 !important;
+        opacity: 0;
+        transition: opacity 150ms ease;
+        -webkit-app-region: no-drag;
+        pointer-events: none;
+      }
+      .wigify-titlebar.visible {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+      .wigify-refresh-select {
+        height: 20px !important;
+        border-radius: 4px !important;
+        border: none !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: rgba(255, 255, 255, 0.55) !important;
+        font-size: 11px !important;
+        padding: 0 4px !important;
+        cursor: pointer !important;
+        -webkit-app-region: no-drag;
+        outline: none !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        transition:
+          color 150ms ease,
+          background-color 150ms ease;
+      }
+      .wigify-refresh-select:hover {
+        color: rgba(255, 255, 255, 0.85) !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+      }
+      .wigify-refresh-select option {
+        background: #171717 !important;
+        color: #fff !important;
+      }
+      .wigify-close-btn {
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 4px !important;
+        border: none !important;
+        background: transparent !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        -webkit-app-region: no-drag;
+        padding: 0 !important;
+        color: rgba(255, 255, 255, 0.55) !important;
+        transition:
+          border-color 150ms ease,
+          color 150ms ease,
+          background-color 150ms ease;
+      }
+      .wigify-close-btn:hover {
+        border-color: rgba(255, 255, 255, 0.85) !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
     </style>
   </head>
 
   <body>
+    <div class="wigify-titlebar" id="wigify-titlebar">
+      <select
+        class="wigify-refresh-select"
+        id="wigify-refresh"
+        aria-label="Refresh interval"
+      >
+        <option value="0">OFF</option>
+        <option value="1000">1s</option>
+        <option value="60000">1m</option>
+        <option value="300000">5m</option>
+        <option value="600000">10m</option>
+        <option value="900000">15m</option>
+        <option value="1800000">30m</option>
+        <option value="3600000">1h</option>
+      </select>
+      <button
+        class="wigify-close-btn"
+        id="wigify-close"
+        aria-label="Close widget"
+      >
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        >
+          <line x1="2" y1="2" x2="8" y2="8" />
+          <line x1="8" y1="2" x2="2" y2="8" />
+        </svg>
+      </button>
+    </div>
     <script>
       (function () {
         var payload = null;
@@ -57,9 +160,27 @@
           writable: false,
         });
 
+        var titlebar = document.getElementById('wigify-titlebar');
+        var closeBtn = document.getElementById('wigify-close');
+        var refreshSelect = document.getElementById('wigify-refresh');
+        var refreshTimer = null;
+
+        function startRefreshTimer(ms) {
+          if (refreshTimer) clearInterval(refreshTimer);
+          refreshTimer = null;
+          if (!ms) return;
+          refreshTimer = setInterval(function () {
+            window.location.reload();
+          }, ms);
+        }
+
         window.ipcRenderer.on('load', function (_, data) {
           if (data.type !== 'widget' || !data.payload) return;
           payload = data.payload;
+
+          var interval = payload.refreshInterval || 0;
+          refreshSelect.value = String(interval);
+          startRefreshTimer(interval);
 
           var source = payload.sourceCode || '';
           document.body.insertAdjacentHTML('beforeend', source);
@@ -74,6 +195,32 @@
             }
             original.parentNode.replaceChild(fresh, original);
           });
+        });
+
+        window.ipcRenderer.on('widget:hover', function (_, hovered) {
+          if (hovered) {
+            titlebar.classList.add('visible');
+          } else {
+            titlebar.classList.remove('visible');
+          }
+        });
+
+        refreshSelect.addEventListener('change', function () {
+          if (!payload) return;
+          var ms = parseInt(refreshSelect.value, 10);
+          startRefreshTimer(ms);
+          window.ipcRenderer.invoke(
+            'widget:update-instance',
+            payload.instanceId,
+            {
+              refreshInterval: ms,
+            },
+          );
+        });
+
+        closeBtn.addEventListener('click', function () {
+          if (!payload) return;
+          window.ipcRenderer.invoke('widget:close', payload.instanceId);
         });
       })();
     </script>

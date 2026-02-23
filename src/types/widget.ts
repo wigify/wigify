@@ -50,6 +50,7 @@ export interface WidgetInstance {
   size: WidgetSize;
   variables: WidgetVariableValues;
   enabled: boolean;
+  refreshInterval?: number;
 }
 
 export interface WidgetState {
@@ -79,4 +80,5 @@ export interface WidgetWindowPayload {
   sourceCode: string;
   variables: WidgetVariableValues;
   size: WidgetSize;
+  refreshInterval?: number;
 }

@@ -110,12 +110,14 @@ export class Window {
   }
 
   private setupEventListeners(): void {
-    this.browserWindow.webContents.on('did-finish-load', () => {
-      const windowData: WindowData = {
-        type: this.config.type,
-      };
-      this.browserWindow.webContents.send('load', windowData);
-    });
+    if (this.config.type !== 'widget') {
+      this.browserWindow.webContents.on('did-finish-load', () => {
+        const windowData: WindowData = {
+          type: this.config.type,
+        };
+        this.browserWindow.webContents.send('load', windowData);
+      });
+    }
 
     this.browserWindow.once('ready-to-show', () => {
       if (this.config.show !== false) {
