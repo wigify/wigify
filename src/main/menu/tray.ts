@@ -3,32 +3,36 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
-  isTrackingActive,
   startCursorProximityTracking,
   stopCursorProximityTracking,
 } from '../system/cursor-proximity';
+import { loadSettings, updateSetting } from '../system/settings';
+import { isDev } from '../utils/env';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const IS_DEV = !!process.env['VITE_DEV_SERVER_URL'];
 const APP_ROOT = path.join(__dirname, '..');
 
 let tray: Tray | null = null;
 
 function getTrayIconPath(): string {
-  if (IS_DEV) {
+  if (isDev) {
     return path.join(APP_ROOT, 'src/main/menu/icons/iconTemplate.png');
   }
 
   return path.join(process.resourcesPath, 'menu-icons/iconTemplate.png');
 }
 
-function buildContextMenu(): Menu {
+async function buildContextMenu(): Promise<Menu> {
+  const settings = await loadSettings();
+
   return Menu.buildFromTemplate([
     {
       label: 'Auto-hide Widgets',
       type: 'checkbox',
-      checked: isTrackingActive(),
-      click: menuItem => {
+      checked: settings.autoHideWidgets,
+      click: async menuItem => {
+        await updateSetting('autoHideWidgets', menuItem.checked);
+
         if (menuItem.checked) {
           startCursorProximityTracking();
           return;
@@ -55,16 +59,16 @@ function buildContextMenu(): Menu {
   ]);
 }
 
-export function createTray(): void {
+export async function createTray(): Promise<void> {
   const icon = nativeImage.createFromPath(getTrayIconPath());
   icon.setTemplateImage(true);
 
   tray = new Tray(icon);
   tray.setToolTip('Wigify');
-  tray.setContextMenu(buildContextMenu());
+  tray.setContextMenu(await buildContextMenu());
 }
 
-export function refreshTrayMenu(): void {
+export async function refreshTrayMenu(): Promise<void> {
   if (!tray) return;
-  tray.setContextMenu(buildContextMenu());
+  tray.setContextMenu(await buildContextMenu());
 }

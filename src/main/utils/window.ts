@@ -4,10 +4,11 @@ import { fileURLToPath } from 'node:url';
 
 import type { WindowConfig, WindowData } from '@/types';
 
+import { devServerUrl } from './env';
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.join(__dirname, '../..');
 
-const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 const RENDERER_DIST = path.join(APP_ROOT, 'dist');
 
 const DEFAULT_CONFIG: Partial<WindowConfig> = {
@@ -108,8 +109,8 @@ export class Window {
   async load(): Promise<void> {
     const entry = this.config.type === 'widget' ? 'widget.html' : 'index.html';
 
-    if (VITE_DEV_SERVER_URL) {
-      const url = new URL(entry, VITE_DEV_SERVER_URL).href;
+    if (devServerUrl) {
+      const url = new URL(entry, devServerUrl).href;
       await this.browserWindow.loadURL(url);
     } else {
       await this.browserWindow.loadFile(path.join(RENDERER_DIST, entry));

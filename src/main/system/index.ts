@@ -6,3 +6,5 @@ export {
 } from './cursor-proximity';
 
 export { encryptSecret, decryptSecret, isEncryptionAvailable } from './secrets';
+
+export { loadSettings, saveSettings, updateSetting } from './settings';

@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 
 import { createTray } from './menu';
 import { startCursorProximityTracking } from './system';
+import { loadSettings } from './system/settings';
 import { createWindow, Window } from './utils/window';
 import {
   ensureConfigDirectories,
@@ -16,7 +17,7 @@ export let mainWindow: Window | null = null;
 async function initializeApp(): Promise<void> {
   await ensureConfigDirectories();
   registerWidgetIpc();
-  createTray();
+  await createTray();
 
   mainWindow = await createWindow({
     type: 'main',
@@ -30,7 +31,10 @@ async function initializeApp(): Promise<void> {
     await spawnWidgetWindow(instance);
   }
 
-  startCursorProximityTracking();
+  const settings = await loadSettings();
+  if (settings.autoHideWidgets) {
+    startCursorProximityTracking();
+  }
 }
 
 app.on('before-quit', () => {
