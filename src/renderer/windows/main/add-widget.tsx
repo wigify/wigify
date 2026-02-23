@@ -334,6 +334,7 @@ export default function AddWidgetPage({ onBack, onSave }: AddWidgetPageProps) {
               <div className="flex flex-1 items-center justify-center overflow-hidden p-3">
                 <WidgetPreview
                   code={code}
+                  debounce={300}
                   className="h-full w-full overflow-hidden rounded-lg"
                 />
               </div>

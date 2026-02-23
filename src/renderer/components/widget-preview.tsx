@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface WidgetPreviewProps {
   code: string;
   className?: string;
+  debounce?: number;
 }
 
-const DEBOUNCE_MS = 300;
+const DEFAULT_DEBOUNCE_MS = 0;
 
 function buildSrcdoc(source: string): string {
   return `<!doctype html>
@@ -20,8 +21,12 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: transparen
 </html>`;
 }
 
-export default function WidgetPreview({ code, className }: WidgetPreviewProps) {
-  const [srcdoc, setSrcdoc] = useState('');
+export default function WidgetPreview({
+  code,
+  className,
+  debounce = DEFAULT_DEBOUNCE_MS,
+}: WidgetPreviewProps) {
+  const [srcdoc, setSrcdoc] = useState(() => buildSrcdoc(code));
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -29,24 +34,27 @@ export default function WidgetPreview({ code, className }: WidgetPreviewProps) {
       clearTimeout(debounceRef.current);
     }
 
+    if (debounce <= 0) {
+      setSrcdoc(buildSrcdoc(code));
+      return;
+    }
+
     debounceRef.current = setTimeout(() => {
       setSrcdoc(buildSrcdoc(code));
-    }, DEBOUNCE_MS);
+    }, debounce);
 
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [code]);
-
-  const sandboxAttr = useMemo(() => 'allow-scripts', []);
+  }, [code, debounce]);
 
   return (
     <div className={className}>
       <iframe
         srcDoc={srcdoc}
-        sandbox={sandboxAttr}
+        sandbox="allow-scripts"
         className="h-full w-full border-0"
         title="Widget Preview"
       />

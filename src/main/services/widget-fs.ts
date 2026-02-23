@@ -209,46 +209,47 @@ export async function isWidgetBuilt(widgetName: string): Promise<boolean> {
 
 export async function loadWidgetState(
   widgetName: string,
+  preloaded?: { location?: WidgetLocation; config?: WidgetConfig },
 ): Promise<WidgetState | null> {
-  const location = await getWidgetLocation(widgetName);
+  const location = preloaded?.location ?? (await getWidgetLocation(widgetName));
   if (!location) return null;
 
-  const manifest = await readWidgetManifest(widgetName);
-  if (!manifest) return null;
+  const manifestPath = path.join(location.path, 'package.json');
+  const sourcePath = path.join(location.path, 'widget.html');
 
-  let sourceCode = '';
+  const [manifestResult, sourceResult] = await Promise.all([
+    fs
+      .readFile(manifestPath, 'utf-8')
+      .then(c => JSON.parse(c) as WidgetManifest)
+      .catch(() => null),
+    fs.readFile(sourcePath, 'utf-8').catch(() => null),
+  ]);
 
-  try {
-    sourceCode = await readWidgetSource(widgetName);
-  } catch {
-    return null;
-  }
+  if (!manifestResult || sourceResult === null) return null;
 
-  const isBuilt = await isWidgetBuilt(widgetName);
-  const config = await loadWidgetConfig();
+  const config = preloaded?.config ?? (await loadWidgetConfig());
   const instances = config.widgets.filter(w => w.widgetName === widgetName);
 
   return {
-    manifest,
+    manifest: manifestResult,
     path: location.path,
-    sourceCode,
-    isBuilt,
+    sourceCode: sourceResult,
+    isBuilt: true,
     instances,
   };
 }
 
 export async function listAllWidgets(): Promise<WidgetState[]> {
-  const locations = await listAllWidgetLocations();
-  const states: WidgetState[] = [];
+  const [locations, config] = await Promise.all([
+    listAllWidgetLocations(),
+    loadWidgetConfig(),
+  ]);
 
-  for (const loc of locations) {
-    const state = await loadWidgetState(loc.name);
-    if (state) {
-      states.push(state);
-    }
-  }
+  const results = await Promise.all(
+    locations.map(loc => loadWidgetState(loc.name, { location: loc, config })),
+  );
 
-  return states;
+  return results.filter((s): s is WidgetState => s !== null);
 }
 
 export async function loadWidgetConfig(): Promise<WidgetConfig> {
