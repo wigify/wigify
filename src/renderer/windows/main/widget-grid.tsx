@@ -1,5 +1,12 @@
 import { useCallback } from 'react';
-import { Folder, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
+import {
+  Folder,
+  LayoutGrid,
+  MoreHorizontal,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import type { WidgetState } from '@/types';
 import WidgetPreview from '@/renderer/components/widget/widget-preview';
 import { Button } from '@/renderer/components/ui/button';
@@ -87,9 +94,13 @@ function WidgetCard({
 
 interface WidgetGridProps {
   onEditWidget: (widget: WidgetState) => void;
+  onAddWidget: () => void;
 }
 
-export default function WidgetGrid({ onEditWidget }: WidgetGridProps) {
+export default function WidgetGrid({
+  onEditWidget,
+  onAddWidget,
+}: WidgetGridProps) {
   const { widgets, deleteWidget, openWidgetFolder, addWidgetToScreen } =
     useWidgets();
 
@@ -113,6 +124,32 @@ export default function WidgetGrid({ onEditWidget }: WidgetGridProps) {
     },
     [openWidgetFolder],
   );
+
+  if (widgets.length === 0) {
+    return (
+      <div className="window-content flex h-full flex-col items-center justify-center gap-4">
+        <div className="bg-secondary flex h-12 w-12 items-center justify-center rounded-xl">
+          <LayoutGrid className="text-muted-foreground h-6 w-6" />
+        </div>
+        <div className="flex flex-col items-center gap-1.5">
+          <span className="text-foreground text-base font-medium">
+            No widgets yet
+          </span>
+          <span className="text-muted-foreground text-center text-sm">
+            Create your first widget to get started
+          </span>
+        </div>
+        <Button
+          size="sm"
+          className="flex-row gap-1.5 rounded-lg px-4"
+          onClick={onAddWidget}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>New Widget</span>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="window-content overflow-auto">

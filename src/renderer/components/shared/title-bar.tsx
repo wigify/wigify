@@ -29,13 +29,13 @@ export default function TitleBar({
   return (
     <div
       className={cn(
-        'titlebar border-border bg-background flex items-center justify-between border-b',
+        'titlebar border-border flex items-center justify-between border-b',
         isMac ? 'pr-3 pl-20' : 'px-3',
       )}
     >
       {tabs && tabs.length > 0 ? (
         <div className="titlebar-no-drag flex items-center">
-          <div className="bg-secondary/50 flex items-center gap-0.5 rounded-lg p-0.5">
+          <div className="bg-glassy flex items-center gap-0.5 rounded-lg p-0.5">
             {tabs.map(tab => (
               <button
                 key={tab.id}
@@ -44,7 +44,7 @@ export default function TitleBar({
                 className={cn(
                   'rounded-md px-3 py-1 text-xs font-medium transition-colors',
                   activeTab === tab.id
-                    ? 'bg-background text-foreground shadow-sm'
+                    ? 'bg-glassy-hover text-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >

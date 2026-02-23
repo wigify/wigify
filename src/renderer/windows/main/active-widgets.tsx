@@ -44,7 +44,7 @@ function ActiveInstanceCard({
         </Button>
       </div>
 
-      <div className="bg-background/80 pointer-events-none absolute right-0 bottom-0 left-0 flex items-center gap-2 px-3 py-2 backdrop-blur-sm">
+      <div className="bg-popover pointer-events-none absolute right-0 bottom-0 left-0 flex items-center gap-2 px-3 py-2">
         <span className="text-foreground truncate text-xs font-medium">
           {instance.widgetName}
         </span>

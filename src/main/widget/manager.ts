@@ -64,6 +64,7 @@ export async function spawnWidgetWindow(
     frame: false,
     transparent: true,
     alwaysOnTop: true,
+    visibleOnAllWorkspaces: true,
     skipTaskbar: true,
     resizable: manifest.resizable ?? false,
     minimizable: false,

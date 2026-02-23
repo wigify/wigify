@@ -80,7 +80,10 @@ export default function MainWindow() {
       {activeTab === 'active' ? (
         <ActiveWidgets />
       ) : (
-        <WidgetGrid onEditWidget={handleEditWidget} />
+        <WidgetGrid
+          onEditWidget={handleEditWidget}
+          onAddWidget={handleAddWidget}
+        />
       )}
     </>
   );

@@ -30,6 +30,9 @@ const DEFAULT_CONFIG: Partial<WindowConfig> = {
 
 const MACOS_GLASSY_CONFIG: Partial<WindowConfig> = {
   titleBarStyle: 'hiddenInset',
+  vibrancy: 'under-window',
+  visualEffectState: 'active',
+  backgroundColor: '#00000000',
 };
 
 export class Window {
@@ -79,6 +82,21 @@ export class Window {
       },
       ...mergedConfig.electronOptions,
     });
+
+    if (mergedConfig.visibleOnAllWorkspaces) {
+      this.browserWindow.setVisibleOnAllWorkspaces(true, {
+        visibleOnFullScreen: true,
+        skipTransformProcessType: true,
+      });
+    }
+
+    if (this.config.type === 'widget') {
+      this.browserWindow.setHiddenInMissionControl(true);
+    }
+
+    if (mergedConfig.alwaysOnTop && this.config.type === 'widget') {
+      this.browserWindow.setAlwaysOnTop(true, 'floating');
+    }
 
     this.setupEventListeners();
   }

@@ -42,6 +42,7 @@ export interface WindowConfig {
   closable?: boolean;
   focusable?: boolean;
   alwaysOnTop?: boolean;
+  visibleOnAllWorkspaces?: boolean;
   fullscreen?: boolean;
   fullscreenable?: boolean;
   skipTaskbar?: boolean;
