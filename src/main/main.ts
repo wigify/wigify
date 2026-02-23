@@ -1,16 +1,16 @@
 import { app, BrowserWindow } from 'electron';
 
-import { createTray } from './menu';
-import { startCursorProximityTracking } from './system';
-import { loadSettings } from './system/settings';
-import { createWindow, Window } from './utils/window';
+import { createTray } from '@/main/menu';
+import { startCursorProximityTracking } from '@/main/system';
+import { loadSettings } from '@/main/system/settings';
+import { createWindow, Window } from '@/main/utils/window';
 import {
   ensureConfigDirectories,
   getEnabledWidgetInstances,
   registerWidgetIpc,
   setAppQuitting,
   spawnWidgetWindow,
-} from './widget';
+} from '@/main/widget';
 
 export let mainWindow: Window | null = null;
 

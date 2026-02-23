@@ -12,7 +12,7 @@ import {
 import { templates } from '@/templates';
 import type { Template } from '@/templates';
 import type { WidgetState } from '@/types';
-import { Button } from '../../components/ui/button';
+import { Button } from '@/renderer/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -20,18 +20,18 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '../../components/ui/command';
+} from '@/renderer/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../../components/ui/popover';
-import MonacoEditor from '../../components/widget/monaco-editor';
-import WidgetPreview from '../../components/widget/widget-preview';
-import CollapsibleSection from '../../components/shared/collapsible-section';
-import { useLocalStorage } from '../../hooks/use-local-storage';
-import { useWidgets } from '../../hooks/use-widgets';
-import { cn } from '../../lib/utils';
+} from '@/renderer/components/ui/popover';
+import MonacoEditor from '@/renderer/components/widget/monaco-editor';
+import WidgetPreview from '@/renderer/components/widget/widget-preview';
+import CollapsibleSection from '@/renderer/components/shared/collapsible-section';
+import { useLocalStorage } from '@/renderer/hooks/use-local-storage';
+import { useWidgets } from '@/renderer/hooks/use-widgets';
+import { cn } from '@/renderer/lib/utils';
 
 interface SidebarSections {
   settings: boolean;

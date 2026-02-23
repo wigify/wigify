@@ -1,6 +1,6 @@
 import { LayoutGrid, Plus } from 'lucide-react';
-import TitleBar from '../../components/shared/title-bar';
-import { Button } from '../../components/ui/button';
+import TitleBar from '@/renderer/components/shared/title-bar';
+import { Button } from '@/renderer/components/ui/button';
 
 interface EmptyPageProps {
   onAddWidget: () => void;

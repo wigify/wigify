@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
 import { Folder, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import type { WidgetState } from '@/types';
-import WidgetPreview from '../../components/widget/widget-preview';
-import { Button } from '../../components/ui/button';
+import WidgetPreview from '@/renderer/components/widget/widget-preview';
+import { Button } from '@/renderer/components/ui/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../../components/ui/popover';
-import { useWidgets } from '../../hooks/use-widgets';
+} from '@/renderer/components/ui/popover';
+import { useWidgets } from '@/renderer/hooks/use-widgets';
 
 interface WidgetCardProps {
   widget: WidgetState;

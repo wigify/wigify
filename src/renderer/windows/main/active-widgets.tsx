@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
 import { Monitor, Trash2 } from 'lucide-react';
 import type { WidgetInstance, WidgetState } from '@/types';
-import WidgetPreview from '../../components/widget/widget-preview';
-import { Button } from '../../components/ui/button';
-import { useWidgets } from '../../hooks/use-widgets';
+import WidgetPreview from '@/renderer/components/widget/widget-preview';
+import { Button } from '@/renderer/components/ui/button';
+import { useWidgets } from '@/renderer/hooks/use-widgets';
 
 interface ActiveInstanceCardProps {
   instance: WidgetInstance;

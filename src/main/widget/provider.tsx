@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 
 import type { WidgetVariableValues } from '@/types';
 
-import { WidgetContext } from './context';
+import { WidgetContext } from '@/main/widget/context';
 
 export interface WidgetProviderProps {
   children: ReactNode;

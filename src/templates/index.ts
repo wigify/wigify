@@ -1,7 +1,7 @@
-import blankManifest from './blank/manifest.json';
-import statManifest from './stat/manifest.json';
-import blankCode from './blank/widget.html?raw';
-import statCode from './stat/widget.html?raw';
+import blankManifest from '@/templates/blank/manifest.json';
+import statManifest from '@/templates/stat/manifest.json';
+import blankCode from '@/templates/blank/widget.html?raw';
+import statCode from '@/templates/stat/widget.html?raw';
 
 export interface TemplateManifest {
   name: string;

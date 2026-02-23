@@ -10,7 +10,7 @@ import type {
   WidgetVariableValues,
 } from '@/types';
 
-import { decryptSecret, encryptSecret } from '../system/secrets';
+import { decryptSecret, encryptSecret } from '@/main/system/secrets';
 
 const CONFIG_DIR = path.join(app.getPath('home'), '.config', 'wigify');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');

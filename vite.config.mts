@@ -11,9 +11,23 @@ export default defineConfig({
     electron({
       main: {
         entry: 'src/main/main.ts',
+        vite: {
+          resolve: {
+            alias: {
+              '@': path.resolve(__dirname, './src'),
+            },
+          },
+        },
       },
       preload: {
         input: path.join(__dirname, 'src/preload/preload.ts'),
+        vite: {
+          resolve: {
+            alias: {
+              '@': path.resolve(__dirname, './src'),
+            },
+          },
+        },
       },
     }),
   ],

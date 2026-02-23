@@ -1,4 +1,4 @@
-export { registerWidgetIpc } from './ipc';
+export { registerWidgetIpc } from '@/main/widget/ipc';
 
 export {
   ensureConfigDirectories,
@@ -25,10 +25,14 @@ export {
   updateWidgetSource,
   widgetExists,
   isWidgetBuilt,
-} from './fs';
-export type { WidgetSource, WidgetLocation, CreateWidgetOptions } from './fs';
+} from '@/main/widget/fs';
+export type {
+  WidgetSource,
+  WidgetLocation,
+  CreateWidgetOptions,
+} from '@/main/widget/fs';
 
-export { buildWidget, watchWidget } from './bundler';
+export { buildWidget, watchWidget } from '@/main/widget/bundler';
 
 export {
   spawnWidgetWindow,
@@ -39,13 +43,13 @@ export {
   updateWidgetWindowPosition,
   updateWidgetWindowSize,
   setAppQuitting,
-} from './manager';
+} from '@/main/widget/manager';
 
-export { WidgetContext, useWidgetContext } from './context';
-export type { WidgetContextValue } from './context';
+export { WidgetContext, useWidgetContext } from '@/main/widget/context';
+export type { WidgetContextValue } from '@/main/widget/context';
 
-export { WidgetProvider } from './provider';
-export type { WidgetProviderProps } from './provider';
+export { WidgetProvider } from '@/main/widget/provider';
+export type { WidgetProviderProps } from '@/main/widget/provider';
 
 export {
   useVariable,
@@ -54,4 +58,4 @@ export {
   useInterval,
   useAutoRefresh,
   useWidgetInfo,
-} from './hooks';
+} from '@/main/widget/hooks';

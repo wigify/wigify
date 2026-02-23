@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react';
 import { Plus } from 'lucide-react';
 import type { WidgetState } from '@/types';
-import TitleBar from '../../components/shared/title-bar';
-import { Button } from '../../components/ui/button';
-import { useWidgets } from '../../hooks/use-widgets';
-import ActiveWidgets from './active-widgets';
-import EmptyPage from './empty';
-import WidgetEditor from './widget-editor';
-import WidgetGrid from './widget-grid';
+import TitleBar from '@/renderer/components/shared/title-bar';
+import { Button } from '@/renderer/components/ui/button';
+import { useWidgets } from '@/renderer/hooks/use-widgets';
+import ActiveWidgets from '@/renderer/windows/main/active-widgets';
+import EmptyPage from '@/renderer/windows/main/empty';
+import WidgetEditor from '@/renderer/windows/main/widget-editor';
+import WidgetGrid from '@/renderer/windows/main/widget-grid';
 
 type MainRoute = 'home' | 'editor';
 type HomeTab = 'available' | 'active';

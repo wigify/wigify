@@ -1,1 +1,1 @@
-export { createTray, refreshTrayMenu } from './tray';
+export { createTray, refreshTrayMenu } from '@/main/menu/tray';

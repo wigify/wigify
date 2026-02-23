@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { useWidgetContext } from './context';
+import { useWidgetContext } from '@/main/widget/context';
 
 export function useVariable<T = string>(name: string): T | undefined {
   const { variables } = useWidgetContext();

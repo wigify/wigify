@@ -1,13 +1,13 @@
 import type { WidgetInstance, WidgetWindowPayload, WindowData } from '@/types';
 
-import { createWindow, Window } from '../utils/window';
-import { removeWidgetFromTracking } from '../system/cursor-proximity';
+import { createWindow, Window } from '@/main/utils/window';
+import { removeWidgetFromTracking } from '@/main/system/cursor-proximity';
 
 import {
   readWidgetManifest,
   readWidgetSource,
   removeWidgetInstance,
-} from './fs';
+} from '@/main/widget/fs';
 
 const widgetWindows = new Map<string, Window>();
 let isAppQuitting = false;
@@ -84,7 +84,7 @@ export async function spawnWidgetWindow(
 
     await removeWidgetInstance(instance.id);
 
-    const { mainWindow } = await import('../main');
+    const { mainWindow } = await import('@/main/main');
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.getBrowserWindow().webContents.send('widget:removed');
     }

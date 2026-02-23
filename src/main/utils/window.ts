@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import type { WindowConfig, WindowData } from '@/types';
 
-import { devServerUrl } from './env';
+import { devServerUrl } from '@/main/utils/env';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.join(__dirname, '../..');

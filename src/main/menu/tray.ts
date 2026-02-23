@@ -5,9 +5,9 @@ import { fileURLToPath } from 'node:url';
 import {
   startCursorProximityTracking,
   stopCursorProximityTracking,
-} from '../system/cursor-proximity';
-import { loadSettings, updateSetting } from '../system/settings';
-import { isDev } from '../utils/env';
+} from '@/main/system/cursor-proximity';
+import { loadSettings, updateSetting } from '@/main/system/settings';
+import { isDev } from '@/main/utils/env';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.join(__dirname, '..');
@@ -45,7 +45,7 @@ async function buildContextMenu(): Promise<Menu> {
     {
       label: 'Show Window',
       click: async () => {
-        const { mainWindow } = await import('../main');
+        const { mainWindow } = await import('@/main/main');
         if (!mainWindow || mainWindow.isDestroyed()) return;
         mainWindow.show();
         mainWindow.focus();
