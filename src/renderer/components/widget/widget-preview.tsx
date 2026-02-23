@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { cn } from '@/renderer/lib/utils';
 
 interface WidgetPreviewProps {
   code: string;
@@ -27,12 +29,15 @@ export default function WidgetPreview({
   debounce = DEFAULT_DEBOUNCE_MS,
 }: WidgetPreviewProps) {
   const [srcdoc, setSrcdoc] = useState(() => buildSrcdoc(code));
+  const [loading, setLoading] = useState(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
+
+    setLoading(true);
 
     if (debounce <= 0) {
       setSrcdoc(buildSrcdoc(code));
@@ -51,13 +56,19 @@ export default function WidgetPreview({
   }, [code, debounce]);
 
   return (
-    <div className={className}>
+    <div className={cn('relative', className)}>
       <iframe
         srcDoc={srcdoc}
         sandbox="allow-scripts"
         className="h-full w-full border-0"
         title="Widget Preview"
+        onLoad={() => setLoading(false)}
       />
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm">
+          <Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
+        </div>
+      )}
     </div>
   );
 }

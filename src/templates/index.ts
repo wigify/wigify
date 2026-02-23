@@ -1,45 +1,20 @@
-import blankManifest from '@/templates/blank/manifest.json';
-import statManifest from '@/templates/stat/manifest.json';
-import blankCode from '@/templates/blank/widget.html?raw';
-import statCode from '@/templates/stat/widget.html?raw';
-
-export interface TemplateManifest {
-  name: string;
-  version: string;
-  title: string;
-  description: string;
-  author: string;
-  size: {
-    width: number;
-    height: number;
-  };
-  resizable: boolean;
-  variables: unknown[];
-}
+import blankCode from '../../widget-templates/blank.html?raw';
+import statCode from '../../widget-templates/stat.html?raw';
 
 export interface Template {
   name: string;
-  manifest: TemplateManifest;
+  title: string;
   code: string;
 }
 
+function toTitle(filename: string): string {
+  return filename
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export const templates: Template[] = [
-  {
-    name: 'blank',
-    manifest: blankManifest as TemplateManifest,
-    code: blankCode,
-  },
-  {
-    name: 'stat',
-    manifest: statManifest as TemplateManifest,
-    code: statCode,
-  },
+  { name: 'blank', title: toTitle('blank'), code: blankCode },
+  { name: 'stat', title: toTitle('stat'), code: statCode },
 ];
-
-export function getTemplate(name: string): Template | undefined {
-  return templates.find(t => t.name === name);
-}
-
-export function listTemplates(): Template[] {
-  return templates;
-}

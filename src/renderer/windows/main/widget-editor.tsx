@@ -119,7 +119,7 @@ export default function WidgetEditor({
         await createWidget({
           name: widgetName,
           code,
-          size: DEFAULT_TEMPLATE.manifest.size,
+          size: { width: 200, height: 100 },
         });
         await addWidgetToScreen(widgetName);
       }
@@ -263,7 +263,7 @@ export default function WidgetEditor({
                       aria-expanded={comboboxOpen}
                       className="h-8 flex-1 justify-between text-xs"
                     >
-                      {pendingTemplate?.manifest.title ?? 'Select template...'}
+                      {pendingTemplate?.title ?? 'Select template...'}
                       <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -279,7 +279,7 @@ export default function WidgetEditor({
                           {templates.map(template => (
                             <CommandItem
                               key={template.name}
-                              value={template.manifest.title}
+                              value={template.title}
                               onSelect={() =>
                                 handleTemplateSelect(template.name)
                               }
@@ -292,7 +292,7 @@ export default function WidgetEditor({
                                     : 'opacity-0',
                                 )}
                               />
-                              {template.manifest.title}
+                              {template.title}
                             </CommandItem>
                           ))}
                         </CommandGroup>
