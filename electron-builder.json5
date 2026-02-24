@@ -21,12 +21,20 @@
       "to": "icon.png"
     }
   ],
+  "publish": {
+    "provider": "github",
+    "owner": "wigify",
+    "repo": "wigify"
+  },
   "mac": {
     "target": [
-      "dmg"
+      "dmg",
+      "zip"
     ],
     "icon": "build/icon.icns",
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "${productName}-Mac-${version}-${arch}.${ext}",
+    "category": "public.app-category.utilities",
+    "notarize": false
   },
   "win": {
     "target": [

@@ -3,7 +3,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { createTray } from '@/main/menu';
-import { startCursorProximityTracking } from '@/main/system';
+import {
+  initAutoUpdater,
+  registerUpdaterIpc,
+  startCursorProximityTracking,
+} from '@/main/system';
 import { loadSettings } from '@/main/system/settings';
 import { createWindow, Window } from '@/main/utils/window';
 import {
@@ -40,6 +44,7 @@ async function initializeApp(): Promise<void> {
 
   await ensureConfigDirectories();
   registerWidgetIpc();
+  registerUpdaterIpc();
   await createTray();
 
   mainWindow = await createWindow({
@@ -59,6 +64,8 @@ async function initializeApp(): Promise<void> {
   if (settings.autoHideWidgets) {
     startCursorProximityTracking();
   }
+
+  initAutoUpdater();
 }
 
 app.on('before-quit', () => {

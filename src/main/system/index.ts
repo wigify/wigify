@@ -16,3 +16,5 @@ export {
   saveSettings,
   updateSetting,
 } from '@/main/system/settings';
+
+export { initAutoUpdater, registerUpdaterIpc } from '@/main/system/updater';

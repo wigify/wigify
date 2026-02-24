@@ -1,0 +1,83 @@
+# Releasing Wigify
+
+## Overview
+
+Releases are triggered manually via GitHub Actions. The workflow bumps the version, builds the macOS app (universal binary — Intel + Apple Silicon), uploads artifacts to a GitHub Release, and commits the version bump back to the repo.
+
+## Prerequisites
+
+### 1. Apple Developer Certificate (Code Signing)
+
+Code signing is **optional** for open-source distribution but recommended. Without it, users will see a "damaged app" warning on macOS and need to run `xattr -cr /Applications/Wigify.app`.
+
+If you want to sign:
+
+1. Enroll in the [Apple Developer Program](https://developer.apple.com/programs/) ($99/year)
+2. Open **Keychain Access** → **Certificate Assistant** → **Request a Certificate from a Certificate Authority**
+   - Enter your email, select **Saved to disk**, click **Continue**
+3. Go to [Apple Developer Certificates](https://developer.apple.com/account/resources/certificates/list)
+   - Click **+** → select **Developer ID Application** → upload your CSR
+   - Download the `.cer` file and double-click to install in Keychain
+4. Export the certificate as `.p12`:
+   - In Keychain Access, find the certificate under **My Certificates**
+   - Right-click → **Export** → choose `.p12` format
+   - Set a strong password (you'll need this for `MAC_CERTIFICATE_PASSWORD`)
+5. Base64-encode the `.p12` file:
+   ```sh
+   base64 -i Certificates.p12 -o cert-base64.txt
+   ```
+6. The contents of `cert-base64.txt` is your `MAC_CERTIFICATE` secret
+
+### 2. GitHub Secrets
+
+Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+
+| Secret                     | Required | Description                                         |
+| -------------------------- | -------- | --------------------------------------------------- |
+| `MAC_CERTIFICATE`          | No       | Base64-encoded `.p12` certificate (from step above) |
+| `MAC_CERTIFICATE_PASSWORD` | No       | Password you set when exporting the `.p12`          |
+
+> `GITHUB_TOKEN` is provided automatically by GitHub Actions — no setup needed.
+
+**If skipping code signing:** You don't need to add any secrets. The build will still work; the app just won't be signed.
+
+## How to Release
+
+1. Go to the repo on GitHub
+2. Click **Actions** tab
+3. Select **Release** workflow from the sidebar
+4. Click **Run workflow**
+5. Enter the version number (e.g. `1.2.0`) — no `v` prefix
+6. Click **Run workflow**
+
+The workflow will:
+
+- Install dependencies
+- Run typecheck, lint, and tests
+- Bump `package.json` version
+- Build the macOS universal app (DMG + ZIP)
+- Create a GitHub Release with the built artifacts
+- Commit the version bump and tag `v1.2.0` back to the repo
+
+## Auto-Update
+
+The app uses `electron-updater` configured for GitHub Releases. When a new release is published:
+
+1. The running app checks for updates on launch
+2. If an update is found, it downloads automatically in the background
+3. A toast notification appears in the bottom-right corner saying the update is ready
+4. The user clicks **Restart** to install and relaunch, or dismisses it (the update installs on next quit)
+
+### What gets uploaded to the release
+
+- `Wigify-Mac-{version}-universal.dmg` — installer for new users
+- `Wigify-Mac-{version}-universal.zip` — used by auto-updater
+- `latest-mac.yml` — metadata file for `electron-updater` to detect new versions
+
+## Version Numbering
+
+Use [Semantic Versioning](https://semver.org/):
+
+- **Patch** (`1.0.1`): bug fixes
+- **Minor** (`1.1.0`): new features, backward-compatible
+- **Major** (`2.0.0`): breaking changes

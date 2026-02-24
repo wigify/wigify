@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 
 import type { WindowData } from '@/types';
+import UpdateToast from '@/renderer/components/shared/update-toast';
 import {
   WidgetStoreContext,
   useWidgetStore,
@@ -75,6 +76,7 @@ export default function App() {
       {windowData.type === 'main' && (
         <WidgetStoreProvider>
           <MainWindow />
+          <UpdateToast />
         </WidgetStoreProvider>
       )}
     </Suspense>
