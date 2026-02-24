@@ -7,7 +7,7 @@ import type { WindowConfig, WindowData } from '@/types';
 import { devServerUrl } from '@/main/utils/env';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const APP_ROOT = path.join(__dirname, '../..');
+const APP_ROOT = path.join(__dirname, '..');
 
 const RENDERER_DIST = path.join(APP_ROOT, 'dist');
 
