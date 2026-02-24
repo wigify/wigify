@@ -28,18 +28,29 @@ If you want to sign:
    ```
 6. The contents of `cert-base64.txt` is your `MAC_CERTIFICATE` secret
 
-### 2. GitHub Secrets
+### 2. Apple Notarization
+
+Notarization is required for macOS apps to pass Gatekeeper without warnings. It requires code signing (step 1) to be set up first.
+
+1. Go to [appleid.apple.com](https://appleid.apple.com/) → **Sign-In and Security** → **App-Specific Passwords**
+2. Click **Generate an app-specific password**, name it something like `wigify-ci`
+3. Copy the generated password — this is your `APPLE_APP_SPECIFIC_PASSWORD` secret
+4. Your **Apple ID** is the email you use to sign into your Apple Developer account
+5. Your **Team ID** can be found at [developer.apple.com/account](https://developer.apple.com/account/) → **Membership Details**
+
+### 3. GitHub Secrets
 
 Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 
-| Secret                     | Required | Description                                         |
-| -------------------------- | -------- | --------------------------------------------------- |
-| `MAC_CERTIFICATE`          | No       | Base64-encoded `.p12` certificate (from step above) |
-| `MAC_CERTIFICATE_PASSWORD` | No       | Password you set when exporting the `.p12`          |
+| Secret                        | Required | Description                                     |
+| ----------------------------- | -------- | ----------------------------------------------- |
+| `MAC_CERTIFICATE`             | Yes      | Base64-encoded `.p12` certificate (from step 1) |
+| `MAC_CERTIFICATE_PASSWORD`    | Yes      | Password you set when exporting the `.p12`      |
+| `APPLE_ID`                    | Yes      | Your Apple Developer account email              |
+| `APPLE_APP_SPECIFIC_PASSWORD` | Yes      | App-specific password (from step 2)             |
+| `APPLE_TEAM_ID`               | Yes      | Your Apple Developer Team ID (from step 2)      |
 
 > `GITHUB_TOKEN` is provided automatically by GitHub Actions — no setup needed.
-
-**If skipping code signing:** You don't need to add any secrets. The build will still work; the app just won't be signed.
 
 ## How to Release
 

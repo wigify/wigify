@@ -34,7 +34,7 @@
     "icon": "build/icon.icns",
     "artifactName": "${productName}-Mac-${version}-${arch}.${ext}",
     "category": "public.app-category.utilities",
-    "notarize": false
+    "notarize": true
   },
   "win": {
     "target": [
