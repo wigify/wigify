@@ -1,0 +1,184 @@
+<style>
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    color: white;
+    background: rgb(30, 30, 30);
+    border-radius: 12px;
+    padding: 12px 14px;
+    overflow: hidden;
+  }
+  .header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
+  .header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .title {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.5;
+  }
+  .value {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .change {
+    font-size: 11px;
+    font-weight: 600;
+    color: #34d399;
+  }
+  .chart-wrap {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+  }
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>
+
+<div class="container">
+  <div class="header">
+    <div class="header-left">
+      <div class="value">$12,480</div>
+      <div class="title">Revenue</div>
+    </div>
+    <div class="change">+18.2%</div>
+  </div>
+  <div class="chart-wrap">
+    <canvas id="chart"></canvas>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+  (function () {
+    function init() {
+      var ctx = document.getElementById('chart').getContext('2d');
+      var labels = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      var data = [
+        3200, 4100, 3800, 5200, 4800, 6100, 5900, 7200, 6800, 8400, 9100, 12480,
+      ];
+
+      var gradient = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height);
+      gradient.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+      gradient.addColorStop(1, 'rgba(139, 92, 246, 0)');
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              data: data,
+              borderColor: '#8b5cf6',
+              borderWidth: 2,
+              backgroundColor: gradient,
+              fill: true,
+              tension: 0.4,
+              pointRadius: 0,
+              pointHoverRadius: 3,
+              pointHoverBackgroundColor: '#8b5cf6',
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: { left: 0, right: 4, top: 4, bottom: 0 },
+          },
+          interaction: {
+            intersect: false,
+            mode: 'index',
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(30,30,30,0.9)',
+              titleColor: 'rgba(255,255,255,0.6)',
+              bodyColor: '#fff',
+              borderColor: 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+              padding: 6,
+              displayColors: false,
+              titleFont: { size: 10 },
+              bodyFont: { size: 11 },
+              callbacks: {
+                label: function (context) {
+                  return '$' + context.parsed.y.toLocaleString();
+                },
+              },
+            },
+          },
+          scales: {
+            x: {
+              display: true,
+              grid: { display: false },
+              ticks: {
+                color: 'rgba(255,255,255,0.25)',
+                font: { size: 9 },
+                maxRotation: 0,
+              },
+              border: { display: false },
+            },
+            y: {
+              display: true,
+              grid: {
+                color: 'rgba(255,255,255,0.04)',
+              },
+              ticks: {
+                color: 'rgba(255,255,255,0.25)',
+                font: { size: 9 },
+                maxTicksLimit: 4,
+                callback: function (value) {
+                  return '$' + (value / 1000).toFixed(0) + 'k';
+                },
+              },
+              border: { display: false },
+            },
+          },
+        },
+      });
+    }
+
+    if (typeof Chart !== 'undefined') {
+      init();
+    } else {
+      var interval = setInterval(function () {
+        if (typeof Chart !== 'undefined') {
+          clearInterval(interval);
+          init();
+        }
+      }, 100);
+    }
+  })();
+</script>
