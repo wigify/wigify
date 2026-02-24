@@ -42,15 +42,18 @@ Notarization is required for macOS apps to pass Gatekeeper without warnings. It 
 
 Go to your repo → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
 
-| Secret                        | Required | Description                                     |
-| ----------------------------- | -------- | ----------------------------------------------- |
-| `MAC_CERTIFICATE`             | Yes      | Base64-encoded `.p12` certificate (from step 1) |
-| `MAC_CERTIFICATE_PASSWORD`    | Yes      | Password you set when exporting the `.p12`      |
-| `APPLE_ID`                    | Yes      | Your Apple Developer account email              |
-| `APPLE_APP_SPECIFIC_PASSWORD` | Yes      | App-specific password (from step 2)             |
-| `APPLE_TEAM_ID`               | Yes      | Your Apple Developer Team ID (from step 2)      |
+| Secret                        | Required | Description                                             |
+| ----------------------------- | -------- | ------------------------------------------------------- |
+| `MAC_CERTIFICATE`             | Yes      | Base64-encoded `.p12` certificate (from step 1)         |
+| `MAC_CERTIFICATE_PASSWORD`    | Yes      | Password you set when exporting the `.p12`              |
+| `MAC_KEYCHAIN_PASSWORD`       | Yes      | Any strong password (used to create a temp CI keychain) |
+| `APPLE_ID`                    | Yes      | Your Apple Developer account email                      |
+| `APPLE_APP_SPECIFIC_PASSWORD` | Yes      | App-specific password (from step 2)                     |
+| `APPLE_TEAM_ID`               | Yes      | Your Apple Developer Team ID (from step 2)              |
 
 > `GITHUB_TOKEN` is provided automatically by GitHub Actions — no setup needed.
+>
+> `MAC_KEYCHAIN_PASSWORD` can be any random string — it's only used to lock/unlock a temporary keychain during CI. Generate one with `openssl rand -base64 32`.
 
 ## How to Release
 
