@@ -1,9 +1,9 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "com.wigify.app",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "Wigify",
   "directories": {
     "output": "release/${version}"
   },
@@ -15,12 +15,17 @@
     {
       "from": "src/main/menu/icons",
       "to": "menu-icons"
+    },
+    {
+      "from": "build/icon.png",
+      "to": "icon.png"
     }
   ],
   "mac": {
     "target": [
       "dmg"
     ],
+    "icon": "build/icon.icns",
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
@@ -32,6 +37,7 @@
         ]
       }
     ],
+    "icon": "build/icon.png",
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
   },
   "nsis": {
@@ -44,6 +50,7 @@
     "target": [
       "AppImage"
     ],
+    "icon": "build/icon.png",
     "artifactName": "${productName}-Linux-${version}.${ext}"
   }
 }

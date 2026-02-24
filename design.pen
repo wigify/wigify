@@ -1,0 +1,312 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "VE3aB",
+      "x": 1486,
+      "y": 137,
+      "name": "Wigify Logo",
+      "clip": true,
+      "width": 1024,
+      "height": 1024,
+      "cornerRadius": 228,
+      "layout": "none",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "a7NQ2",
+          "x": 0,
+          "y": 0,
+          "name": "Background",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "linear",
+            "enabled": true,
+            "rotation": 150,
+            "size": {
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#b11717",
+                "position": 0
+              },
+              {
+                "color": "#DC2626",
+                "position": 0.5
+              },
+              {
+                "color": "#F97316",
+                "position": 1
+              }
+            ]
+          },
+          "width": 1024,
+          "height": 1024
+        },
+        {
+          "type": "frame",
+          "id": "QVaJe",
+          "x": 152,
+          "y": 212,
+          "name": "W Grid",
+          "reusable": true,
+          "width": 720,
+          "height": 600,
+          "layout": "vertical",
+          "gap": 10,
+          "justifyContent": "space_around",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "NaZz5",
+              "name": "Row 1",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "QgAUW",
+                  "name": "r1c1",
+                  "fill": "#FFFFFF",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "MDvlq",
+                  "name": "r1c2",
+                  "fill": "#FFFFFF00",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "nFq3f",
+                  "name": "r1c3",
+                  "fill": "#FFFFFF00",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "vGa23",
+                  "name": "r1c4",
+                  "fill": "#FFFFFF00",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "IqId1",
+                  "name": "r1c5",
+                  "fill": "#FFFFFF",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "6mND4",
+              "name": "Row 2",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "R5kFd",
+                  "name": "r2c1",
+                  "fill": "#FFFFFFEE",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "3Tg7r",
+                  "name": "r2c2",
+                  "fill": "#FFFFFF00",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "bcnml",
+                  "name": "r2c3",
+                  "fill": "#FFFFFFCC",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "TBWAx",
+                  "name": "r2c4",
+                  "fill": "#FFFFFF00",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "SqHlF",
+                  "name": "r2c5",
+                  "fill": "#FFFFFFEE",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "gfZfB",
+              "name": "Row 2",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "VpehH",
+                  "name": "r2c1",
+                  "fill": "#FFFFFFEE",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "bs5gb",
+                  "name": "r2c2",
+                  "fill": "#FFFFFF00",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "JdS7p",
+                  "name": "r2c3",
+                  "fill": "#FFFFFFCC",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "5zZNE",
+                  "name": "r2c4",
+                  "fill": "#FFFFFF00",
+                  "width": "fill_container",
+                  "height": "fill_container"
+                },
+                {
+                  "type": "rectangle",
+                  "cornerRadius": 24,
+                  "id": "PTJoe",
+                  "name": "r2c5",
+                  "fill": "#FFFFFFEE",
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000020",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 16
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

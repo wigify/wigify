@@ -1,4 +1,6 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, nativeImage } from 'electron';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { createTray } from '@/main/menu';
 import { startCursorProximityTracking } from '@/main/system';
@@ -12,9 +14,30 @@ import {
   spawnWidgetWindow,
 } from '@/main/widget';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 export let mainWindow: Window | null = null;
 
+function getAppIcon(): Electron.NativeImage | undefined {
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'icon.png')
+    : path.join(__dirname, '../../build/icon.png');
+
+  const icon = nativeImage.createFromPath(iconPath);
+  if (icon.isEmpty()) return undefined;
+  return icon;
+}
+
+function setDockIcon(icon: Electron.NativeImage): void {
+  if (process.platform === 'darwin') {
+    app.dock.setIcon(icon);
+  }
+}
+
 async function initializeApp(): Promise<void> {
+  const icon = getAppIcon();
+  if (icon) setDockIcon(icon);
+
   await ensureConfigDirectories();
   registerWidgetIpc();
   await createTray();
@@ -24,6 +47,7 @@ async function initializeApp(): Promise<void> {
     width: 800,
     height: 600,
     show: true,
+    electronOptions: icon ? { icon } : undefined,
   });
 
   const instances = await getEnabledWidgetInstances();
