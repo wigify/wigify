@@ -16,14 +16,12 @@
 
 ## Screenshots
 
-<!-- Replace the paths below with your actual screenshot images -->
-
 <p align="center">
-  <img src="" alt="Screenshot 1" width="600" />
+  <img src="screenshots/widgets.png" alt="Widgets" width="600" />
 </p>
 
 <p align="center">
-  <img src="" alt="Screenshot 2" width="600" />
+  <img src="screenshots/editor.png" alt="Editor" width="600" />
 </p>
 
 ## Features
@@ -66,15 +64,20 @@ Contributions are welcome! Here's how you can help:
 
 1. Fork the repository
 2. Clone your fork:
+
    ```bash
    git clone https://github.com/<your-username>/wigify.git
    cd wigify
    ```
+
 3. Install dependencies:
+
    ```bash
    bun install
    ```
+
 4. Start the dev server:
+
    ```bash
    bun dev
    ```
@@ -90,9 +93,11 @@ Contributions are welcome! Here's how you can help:
 ### Submitting Changes
 
 1. Create a new branch for your feature or fix:
+
    ```bash
    git checkout -b my-feature
    ```
+
 2. Make your changes
 3. Run `bun pre-commit` to ensure lint, tests, and formatting all pass
 4. Commit your changes with a clear message
