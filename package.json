@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
     "build-mac": "tsc && vite build && electron-builder --mac --universal",
+    "release-mac": "tsc && vite build && electron-builder --mac --universal --publish always",
     "build-mac:local": "tsc && vite build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac",
     "test": "vitest run",
     "test:watch": "vitest",

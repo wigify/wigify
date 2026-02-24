@@ -44,8 +44,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.MAC_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
-        run: |
-          tsc && vite build && electron-builder --mac --universal --publish always
+        run: bun run release-mac
 
       - name: Commit version bump
         run: |
