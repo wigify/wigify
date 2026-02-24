@@ -17,11 +17,8 @@
 ## Screenshots
 
 <p align="center">
-  <img src="screenshots/widgets.png" alt="Widgets" width="600" />
-</p>
-
-<p align="center">
-  <img src="screenshots/editor.png" alt="Editor" width="600" />
+  <img src="screenshots/widgets.png" alt="Widgets" width="49%" />
+  <img src="screenshots/editor.png" alt="Editor" width="49%" />
 </p>
 
 ## Features
