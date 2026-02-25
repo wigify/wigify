@@ -40,19 +40,25 @@ export default function WidgetPreview({
   const [srcdoc, setSrcdoc] = useState(() => buildSrcdoc(source));
   const [loading, setLoading] = useState(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevSrcdocRef = useRef(srcdoc);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
+    const newSrcdoc = buildSrcdoc(source);
+    if (newSrcdoc === prevSrcdocRef.current) return;
+
     setLoading(true);
 
     if (debounce <= 0) {
-      setSrcdoc(buildSrcdoc(source));
+      setSrcdoc(newSrcdoc);
+      prevSrcdocRef.current = newSrcdoc;
       return;
     }
 
     debounceRef.current = setTimeout(() => {
-      setSrcdoc(buildSrcdoc(source));
+      setSrcdoc(newSrcdoc);
+      prevSrcdocRef.current = newSrcdoc;
     }, debounce);
 
     return () => {
