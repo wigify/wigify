@@ -24,6 +24,7 @@ import {
   readWidgetVariables,
   removeWidgetInstance,
   updateWidgetInstance,
+  updateWidgetSize,
   updateWidgetSource,
   widgetExists,
   writeWidgetVariables,
@@ -213,6 +214,18 @@ export function registerWidgetIpc(): void {
     'widget:update-source',
     async (_, widgetName: string, code: string): Promise<void> => {
       await updateWidgetSource(widgetName, code);
+      await notifyWidgetChanged();
+    },
+  );
+
+  ipcMain.handle(
+    'widget:update-size',
+    async (
+      _,
+      widgetName: string,
+      size: { width: number; height: number },
+    ): Promise<void> => {
+      await updateWidgetSize(widgetName, size);
       await notifyWidgetChanged();
     },
   );

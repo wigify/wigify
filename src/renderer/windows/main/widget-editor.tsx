@@ -72,10 +72,21 @@ export default function WidgetEditor({
   );
 
   const [widgetName, setWidgetName] = useState(widget?.manifest.name ?? '');
+  const [widgetWidth, setWidgetWidth] = useState(
+    widget?.manifest.size.width ?? 200,
+  );
+  const [widgetHeight, setWidgetHeight] = useState(
+    widget?.manifest.size.height ?? 100,
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { createWidget, updateWidgetSource, addWidgetToScreen } = useWidgets();
+  const {
+    createWidget,
+    updateWidgetSource,
+    updateWidgetSize,
+    addWidgetToScreen,
+  } = useWidgets();
 
   const toggleSection = (section: keyof SidebarSections) => {
     setSections(prev => ({ ...prev, [section]: !prev[section] }));
@@ -98,13 +109,31 @@ export default function WidgetEditor({
     return widgetName.length > 0 && WIDGET_NAME_REGEX.test(widgetName);
   }, [widgetName]);
 
+  const sizeChanged = useMemo(() => {
+    if (!isEditing) return false;
+    return (
+      widgetWidth !== widget.manifest.size.width ||
+      widgetHeight !== widget.manifest.size.height
+    );
+  }, [isEditing, widget, widgetWidth, widgetHeight]);
+
   const canSave = useMemo(() => {
     if (saving || code.trim().length === 0) return false;
+    if (widgetWidth < 1 || widgetHeight < 1) return false;
 
-    if (isEditing) return code !== widget.sourceCode;
+    if (isEditing) return code !== widget.sourceCode || sizeChanged;
 
     return isValidName;
-  }, [saving, code, isEditing, widget, isValidName]);
+  }, [
+    saving,
+    code,
+    isEditing,
+    widget,
+    isValidName,
+    widgetWidth,
+    widgetHeight,
+    sizeChanged,
+  ]);
 
   const handleSave = useCallback(async () => {
     if (!canSave) return;
@@ -112,15 +141,18 @@ export default function WidgetEditor({
     setSaving(true);
     setError(null);
 
+    const size = { width: widgetWidth, height: widgetHeight };
+
     try {
       if (isEditing) {
-        await updateWidgetSource(widget.manifest.name, code);
+        if (code !== widget.sourceCode) {
+          await updateWidgetSource(widget.manifest.name, code);
+        }
+        if (sizeChanged) {
+          await updateWidgetSize(widget.manifest.name, size);
+        }
       } else {
-        await createWidget({
-          name: widgetName,
-          code,
-          size: { width: 200, height: 100 },
-        });
+        await createWidget({ name: widgetName, code, size });
         await addWidgetToScreen(widgetName);
       }
       onSave?.();
@@ -134,9 +166,13 @@ export default function WidgetEditor({
     isEditing,
     widget,
     widgetName,
+    widgetWidth,
+    widgetHeight,
     code,
+    sizeChanged,
     createWidget,
     updateWidgetSource,
+    updateWidgetSize,
     addWidgetToScreen,
     onSave,
   ]);
@@ -235,6 +271,35 @@ export default function WidgetEditor({
                       Use lowercase letters, numbers, and hyphens only
                     </span>
                   )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-muted-foreground text-xs font-medium">
+                    Default Size
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      value={widgetWidth}
+                      onChange={e =>
+                        setWidgetWidth(Math.max(1, Number(e.target.value)))
+                      }
+                      min={1}
+                      placeholder="Width"
+                      className="border-border bg-secondary text-foreground placeholder:text-muted-foreground/70 focus:ring-ring h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:ring-1"
+                    />
+                    <span className="text-muted-foreground text-xs">x</span>
+                    <input
+                      type="number"
+                      value={widgetHeight}
+                      onChange={e =>
+                        setWidgetHeight(Math.max(1, Number(e.target.value)))
+                      }
+                      min={1}
+                      placeholder="Height"
+                      className="border-border bg-secondary text-foreground placeholder:text-muted-foreground/70 focus:ring-ring h-8 w-full rounded-md border px-2.5 text-xs outline-none focus:ring-1"
+                    />
+                  </div>
                 </div>
 
                 {error && (
