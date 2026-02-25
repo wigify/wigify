@@ -8,8 +8,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
-    "build-mac": "tsc && vite build && electron-builder --mac --arm64 && electron-builder --mac --x64",
-    "release-mac": "tsc && vite build && electron-builder --mac --arm64 --publish always && electron-builder --mac --x64 --publish always",
+    "build-mac": "tsc && vite build && electron-builder --mac --arm64 --x64",
+    "release-mac": "tsc && vite build && electron-builder --mac --arm64 --x64 --publish always",
     "build-mac:local": "tsc && vite build && CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --mac",
     "test": "vitest run",
     "test:watch": "vitest",
