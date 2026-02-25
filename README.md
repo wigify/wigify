@@ -26,8 +26,6 @@
 - **Built-in Code Editor** - Full-featured Monaco editor with syntax highlighting, autocompletion, and live preview.
 - **Live Preview** - See your changes in real-time as you edit widget code.
 - **Widget Templates** - Get started quickly with built-in templates: Stat, Weather, Chart, Visualizer, Countdown, Digital Clock, and more.
-- **Configurable Variables** - Define typed variables (text, number, boolean, color, secret) per widget that users can customize without touching code.
-- **Encrypted Secrets** - Secret variables are encrypted using the system keychain via Electron's `safeStorage` API.
 - **Auto-Refresh** - Set a refresh interval per widget (1s, 1m, 5m, 10m, 15m, 30m, 1h) to keep data up-to-date.
 - **Cursor Dodge** - Widgets automatically fade out and become click-through when your cursor gets close.
 - **Smart Grid Positioning** - Widgets are automatically arranged in a clean grid layout from the top-right corner.
