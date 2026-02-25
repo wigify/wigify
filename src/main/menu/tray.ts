@@ -7,6 +7,12 @@ import {
   stopCursorProximityTracking,
 } from '@/main/system/cursor-proximity';
 import { loadSettings, updateSetting } from '@/main/system/settings';
+import {
+  checkForUpdates,
+  getUpdateStatus,
+  installUpdate,
+  setOnStatusChange,
+} from '@/main/system/updater';
 import { isDev } from '@/main/utils/env';
 import { arrangeAllWidgets } from '@/main/widget/grid';
 
@@ -23,10 +29,56 @@ function getTrayIconPath(): string {
   return path.join(process.resourcesPath, 'menu-icons/iconTemplate.png');
 }
 
+async function openMainWindowAndUpdate(): Promise<void> {
+  const { createMainWindow, mainWindow } = await import('@/main/main');
+  await createMainWindow();
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.getBrowserWindow().webContents.send('updater:start-install');
+  }
+  installUpdate();
+}
+
+function getUpdateMenuItem(): Electron.MenuItemConstructorOptions | null {
+  const status = getUpdateStatus();
+
+  switch (status.state) {
+    case 'checking':
+      return {
+        label: 'Checking for Updates...',
+        enabled: false,
+      };
+    case 'available':
+    case 'downloading':
+      return {
+        label: status.progress
+          ? `Downloading Update (${status.progress}%)...`
+          : 'Downloading Update...',
+        enabled: false,
+      };
+    case 'ready':
+      return {
+        label: `Update Available (v${status.version})`,
+        click: openMainWindowAndUpdate,
+      };
+    case 'error':
+      return {
+        label: 'Check for Updates',
+        sublabel: 'Last check failed',
+        click: checkForUpdates,
+      };
+    default:
+      return {
+        label: 'Check for Updates',
+        click: checkForUpdates,
+      };
+  }
+}
+
 async function buildContextMenu(): Promise<Menu> {
   const settings = await loadSettings();
+  const updateMenuItem = getUpdateMenuItem();
 
-  return Menu.buildFromTemplate([
+  const menuItems: Electron.MenuItemConstructorOptions[] = [
     {
       label: 'Auto-hide Widgets',
       type: 'checkbox',
@@ -54,12 +106,20 @@ async function buildContextMenu(): Promise<Menu> {
         await createMainWindow();
       },
     },
-    { type: 'separator' },
-    {
-      label: 'Quit',
-      click: () => app.quit(),
-    },
-  ]);
+  ];
+
+  if (updateMenuItem) {
+    menuItems.push({ type: 'separator' });
+    menuItems.push(updateMenuItem);
+  }
+
+  menuItems.push({ type: 'separator' });
+  menuItems.push({
+    label: 'Quit',
+    click: () => app.quit(),
+  });
+
+  return Menu.buildFromTemplate(menuItems);
 }
 
 export async function createTray(): Promise<void> {
@@ -69,6 +129,8 @@ export async function createTray(): Promise<void> {
   tray = new Tray(icon);
   tray.setToolTip('Wigify');
   tray.setContextMenu(await buildContextMenu());
+
+  setOnStatusChange(() => refreshTrayMenu());
 }
 
 export async function refreshTrayMenu(): Promise<void> {

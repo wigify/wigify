@@ -3,11 +3,58 @@ import { ipcMain } from 'electron';
 
 import { isDev } from '@/main/utils/env';
 
+export type UpdateState =
+  | 'idle'
+  | 'checking'
+  | 'available'
+  | 'downloading'
+  | 'ready'
+  | 'error';
+
+interface UpdateStatus {
+  state: UpdateState;
+  version?: string;
+  progress?: number;
+  error?: string;
+}
+
+let currentStatus: UpdateStatus = { state: 'idle' };
+
 function sendToMainWindow(channel: string, ...args: unknown[]): void {
   import('@/main/main').then(({ mainWindow }) => {
     if (!mainWindow || mainWindow.isDestroyed()) return;
     mainWindow.getBrowserWindow().webContents.send(channel, ...args);
   });
+}
+
+type StatusChangeCallback = (status: UpdateStatus) => void;
+let onStatusChange: StatusChangeCallback | null = null;
+
+export function setOnStatusChange(callback: StatusChangeCallback | null): void {
+  onStatusChange = callback;
+}
+
+function updateStatus(status: UpdateStatus): void {
+  currentStatus = status;
+  sendToMainWindow('updater:status', status);
+  onStatusChange?.(status);
+}
+
+export function getUpdateStatus(): UpdateStatus {
+  return currentStatus;
+}
+
+export function checkForUpdates(): void {
+  if (isDev) {
+    updateStatus({ state: 'idle' });
+    return;
+  }
+  updateStatus({ state: 'checking' });
+  autoUpdater.checkForUpdates();
+}
+
+export function installUpdate(): void {
+  autoUpdater.quitAndInstall(false, true);
 }
 
 export function initAutoUpdater(): void {
@@ -16,16 +63,32 @@ export function initAutoUpdater(): void {
   autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
 
+  autoUpdater.on('checking-for-update', () => {
+    updateStatus({ state: 'checking' });
+  });
+
   autoUpdater.on('update-available', info => {
-    sendToMainWindow('updater:available', info.version);
+    updateStatus({ state: 'available', version: info.version });
+  });
+
+  autoUpdater.on('download-progress', progress => {
+    updateStatus({
+      state: 'downloading',
+      version: currentStatus.version,
+      progress: Math.round(progress.percent),
+    });
   });
 
   autoUpdater.on('update-downloaded', info => {
-    sendToMainWindow('updater:downloaded', info.version);
+    updateStatus({ state: 'ready', version: info.version });
+  });
+
+  autoUpdater.on('update-not-available', () => {
+    updateStatus({ state: 'idle' });
   });
 
   autoUpdater.on('error', error => {
-    sendToMainWindow('updater:error', error.message);
+    updateStatus({ state: 'error', error: error.message });
   });
 
   autoUpdater.checkForUpdates();
@@ -33,6 +96,14 @@ export function initAutoUpdater(): void {
 
 export function registerUpdaterIpc(): void {
   ipcMain.handle('updater:install', () => {
-    autoUpdater.quitAndInstall(false, true);
+    installUpdate();
+  });
+
+  ipcMain.handle('updater:check', () => {
+    checkForUpdates();
+  });
+
+  ipcMain.handle('updater:get-status', () => {
+    return currentStatus;
   });
 }
