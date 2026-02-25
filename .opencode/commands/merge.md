@@ -1,5 +1,7 @@
 ---
 description: Create branch, PR, and merge for current changes
+agent: build
+model: anthropic/claude-sonnet-4-6
 ---
 
 You are executing a merge workflow. Follow these steps exactly and stop if any step fails.
