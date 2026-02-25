@@ -22,6 +22,24 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export let mainWindow: Window | null = null;
 
+export async function createMainWindow(): Promise<void> {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.show();
+    mainWindow.focus();
+    return;
+  }
+
+  const icon = getAppIcon();
+
+  mainWindow = await createWindow({
+    type: 'main',
+    width: 800,
+    height: 600,
+    show: true,
+    electronOptions: icon ? { icon } : undefined,
+  });
+}
+
 function getAppIcon(): Electron.NativeImage | undefined {
   const iconPath = app.isPackaged
     ? path.join(process.resourcesPath, 'icon.png')
@@ -47,13 +65,7 @@ async function initializeApp(): Promise<void> {
   registerUpdaterIpc();
   await createTray();
 
-  mainWindow = await createWindow({
-    type: 'main',
-    width: 800,
-    height: 600,
-    show: true,
-    electronOptions: icon ? { icon } : undefined,
-  });
+  await createMainWindow();
 
   const instances = await getEnabledWidgetInstances();
   for (const instance of instances) {
@@ -82,7 +94,10 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     initializeApp();
+    return;
   }
+
+  createMainWindow();
 });
 
 app.whenReady().then(initializeApp);
