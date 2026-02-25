@@ -2,22 +2,6 @@ import type { BrowserWindowConstructorOptions } from 'electron';
 
 export type WindowType = 'main' | 'widget';
 
-export type VibrancyMaterial =
-  | 'titlebar'
-  | 'selection'
-  | 'menu'
-  | 'popover'
-  | 'sidebar'
-  | 'header'
-  | 'sheet'
-  | 'window'
-  | 'hud'
-  | 'fullscreen-ui'
-  | 'tooltip'
-  | 'content'
-  | 'under-window'
-  | 'under-page';
-
 export type TitleBarStyle =
   | 'default'
   | 'hidden'
@@ -49,8 +33,6 @@ export interface WindowConfig {
   show?: boolean;
   frame?: boolean;
   transparent?: boolean;
-  vibrancy?: VibrancyMaterial;
-  visualEffectState?: 'followWindow' | 'active' | 'inactive';
   titleBarStyle?: TitleBarStyle;
   titleBarOverlay?:
     | boolean

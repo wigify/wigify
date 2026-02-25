@@ -65,8 +65,6 @@ export class Window {
       show: mergedConfig.show,
       frame: mergedConfig.frame,
       transparent: mergedConfig.transparent,
-      vibrancy: mergedConfig.vibrancy,
-      visualEffectState: mergedConfig.visualEffectState,
       titleBarStyle: mergedConfig.titleBarStyle,
       titleBarOverlay: mergedConfig.titleBarOverlay,
       trafficLightPosition: mergedConfig.trafficLightPosition,

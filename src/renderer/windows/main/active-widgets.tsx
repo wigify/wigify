@@ -20,7 +20,11 @@ function ActiveInstanceCard({
     <div className="group relative overflow-hidden rounded-xl border">
       <div className="bg-background aspect-video w-full transition-all duration-200 group-hover:scale-[1.02] group-hover:blur-[2px]">
         {widget ? (
-          <WidgetPreview code={widget.sourceCode} className="h-full w-full" />
+          <WidgetPreview
+            code={widget.sourceCode}
+            className="h-full w-full"
+            scale={0.5}
+          />
         ) : (
           <div className="flex h-full items-center justify-center">
             <span className="text-muted-foreground text-xs">
