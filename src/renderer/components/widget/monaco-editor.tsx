@@ -12,9 +12,12 @@ loader.config({
   },
 });
 
+type EditorLanguage = 'html' | 'css' | 'javascript';
+
 interface MonacoEditorProps {
   value: string;
   onChange?: (value: string) => void;
+  language?: EditorLanguage;
   readOnly?: boolean;
   className?: string;
 }
@@ -130,9 +133,16 @@ function useSystemTheme(): 'dark' | 'light' {
   return theme;
 }
 
+const LANGUAGE_PATHS: Record<EditorLanguage, string> = {
+  html: 'file:///widget.html',
+  css: 'file:///style.css',
+  javascript: 'file:///script.js',
+};
+
 export default function MonacoEditor({
   value,
   onChange,
+  language = 'html',
   readOnly = false,
   className,
 }: MonacoEditorProps) {
@@ -173,8 +183,8 @@ export default function MonacoEditor({
   return (
     <Editor
       className={className}
-      defaultLanguage="html"
-      defaultPath="file:///widget.html"
+      language={language}
+      path={LANGUAGE_PATHS[language]}
       value={value}
       onChange={handleChange}
       onMount={handleMount}

@@ -40,10 +40,10 @@ export async function spawnWidgetWindow(
     return null;
   }
 
-  let sourceCode = '';
+  let source;
 
   try {
-    sourceCode = await readWidgetSource(instance.widgetName);
+    source = await readWidgetSource(instance.widgetName);
   } catch {
     return null;
   }
@@ -51,7 +51,7 @@ export async function spawnWidgetWindow(
   const payload: WidgetWindowPayload = {
     instanceId: instance.id,
     widgetName: instance.widgetName,
-    sourceCode,
+    source,
     variables: instance.variables,
     size: instance.size,
     refreshInterval: instance.refreshInterval,

@@ -6,6 +6,7 @@ import type {
   WidgetConfig,
   WidgetInstance,
   WidgetManifest,
+  WidgetSourceFiles,
   WidgetState,
   WidgetVariableValues,
 } from '@/types';
@@ -192,9 +193,31 @@ export async function getWidgetSourcePath(widgetName: string): Promise<string> {
   return path.join(location.path, 'widget.html');
 }
 
-export async function readWidgetSource(widgetName: string): Promise<string> {
-  const sourcePath = await getWidgetSourcePath(widgetName);
-  return fs.readFile(sourcePath, 'utf-8');
+async function readFileOrEmpty(filePath: string): Promise<string> {
+  try {
+    return await fs.readFile(filePath, 'utf-8');
+  } catch {
+    return '';
+  }
+}
+
+export async function readWidgetSource(
+  widgetName: string,
+): Promise<WidgetSourceFiles> {
+  const location = await getWidgetLocation(widgetName);
+  if (!location) throw new Error(`Widget not found: ${widgetName}`);
+
+  const htmlPath = path.join(location.path, 'widget.html');
+  const cssPath = path.join(location.path, 'style.css');
+  const jsPath = path.join(location.path, 'script.js');
+
+  const [html, css, js] = await Promise.all([
+    fs.readFile(htmlPath, 'utf-8'),
+    readFileOrEmpty(cssPath),
+    readFileOrEmpty(jsPath),
+  ]);
+
+  return { html, css, js };
 }
 
 export async function isWidgetBuilt(widgetName: string): Promise<boolean> {
@@ -215,17 +238,21 @@ export async function loadWidgetState(
   if (!location) return null;
 
   const manifestPath = path.join(location.path, 'package.json');
-  const sourcePath = path.join(location.path, 'widget.html');
+  const htmlPath = path.join(location.path, 'widget.html');
+  const cssPath = path.join(location.path, 'style.css');
+  const jsPath = path.join(location.path, 'script.js');
 
-  const [manifestResult, sourceResult] = await Promise.all([
+  const [manifestResult, html, css, js] = await Promise.all([
     fs
       .readFile(manifestPath, 'utf-8')
       .then(c => JSON.parse(c) as WidgetManifest)
       .catch(() => null),
-    fs.readFile(sourcePath, 'utf-8').catch(() => null),
+    fs.readFile(htmlPath, 'utf-8').catch(() => null),
+    readFileOrEmpty(cssPath),
+    readFileOrEmpty(jsPath),
   ]);
 
-  if (!manifestResult || sourceResult === null) return null;
+  if (!manifestResult || html === null) return null;
 
   const config = preloaded?.config ?? (await loadWidgetConfig());
   const instances = config.widgets.filter(w => w.widgetName === widgetName);
@@ -233,7 +260,7 @@ export async function loadWidgetState(
   return {
     manifest: manifestResult,
     path: location.path,
-    sourceCode: sourceResult,
+    source: { html, css, js },
     isBuilt: true,
     instances,
   };
@@ -307,7 +334,7 @@ export async function getEnabledWidgetInstances(): Promise<WidgetInstance[]> {
 
 export interface CreateWidgetOptions {
   name: string;
-  code: string;
+  source: WidgetSourceFiles;
   size: { width: number; height: number };
 }
 
@@ -338,12 +365,15 @@ export async function createWidget(
     variables: [],
   };
 
-  await fs.writeFile(
-    path.join(widgetDir, 'package.json'),
-    JSON.stringify(manifest, null, 2),
-  );
-
-  await fs.writeFile(path.join(widgetDir, 'widget.html'), options.code);
+  await Promise.all([
+    fs.writeFile(
+      path.join(widgetDir, 'package.json'),
+      JSON.stringify(manifest, null, 2),
+    ),
+    fs.writeFile(path.join(widgetDir, 'widget.html'), options.source.html),
+    fs.writeFile(path.join(widgetDir, 'style.css'), options.source.css),
+    fs.writeFile(path.join(widgetDir, 'script.js'), options.source.js),
+  ]);
 }
 
 export async function deleteWidget(name: string): Promise<void> {
@@ -364,10 +394,16 @@ export async function deleteWidget(name: string): Promise<void> {
 
 export async function updateWidgetSource(
   widgetName: string,
-  code: string,
+  source: WidgetSourceFiles,
 ): Promise<void> {
-  const sourcePath = await getWidgetSourcePath(widgetName);
-  await fs.writeFile(sourcePath, code);
+  const location = await getWidgetLocation(widgetName);
+  if (!location) throw new Error(`Widget not found: ${widgetName}`);
+
+  await Promise.all([
+    fs.writeFile(path.join(location.path, 'widget.html'), source.html),
+    fs.writeFile(path.join(location.path, 'style.css'), source.css),
+    fs.writeFile(path.join(location.path, 'script.js'), source.js),
+  ]);
 }
 
 export async function updateWidgetSize(

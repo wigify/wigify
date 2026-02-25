@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import type { WidgetSourceFiles } from '@/types';
 import { cn } from '@/renderer/lib/utils';
 
 interface WidgetPreviewProps {
-  code: string;
+  source: WidgetSourceFiles;
   className?: string;
   debounce?: number;
   scale?: number;
@@ -11,60 +12,66 @@ interface WidgetPreviewProps {
 
 const DEFAULT_DEBOUNCE_MS = 0;
 
-function buildSrcdoc(source: string): string {
-  return `<!doctype html>
-<html>
-<head>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }
-</style>
-</head>
-<body>${source}</body>
-</html>`;
+const RESET_CSS =
+  '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }\n' +
+  'html, body { width: 100%; height: 100%; overflow: hidden; background: transparent; }';
+
+function buildSrcdoc({ html, css, js }: WidgetSourceFiles): string {
+  const doc = [
+    '<!doctype html>',
+    '<html>',
+    '<head>',
+    `<style>${RESET_CSS}\n${css}</style>`,
+    '</head>',
+    `<body>${html}`,
+    js ? `<script>${js}</` + 'script>' : '',
+    '</body>',
+    '</html>',
+  ];
+  return doc.join('');
 }
 
 export default function WidgetPreview({
-  code,
+  source,
   className,
   debounce = DEFAULT_DEBOUNCE_MS,
   scale,
 }: WidgetPreviewProps) {
-  const [srcdoc, setSrcdoc] = useState(() => buildSrcdoc(code));
+  const [srcdoc, setSrcdoc] = useState(() => buildSrcdoc(source));
   const [loading, setLoading] = useState(true);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
     setLoading(true);
 
     if (debounce <= 0) {
-      setSrcdoc(buildSrcdoc(code));
+      setSrcdoc(buildSrcdoc(source));
       return;
     }
 
     debounceRef.current = setTimeout(() => {
-      setSrcdoc(buildSrcdoc(code));
+      setSrcdoc(buildSrcdoc(source));
     }, debounce);
 
     return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
+      if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [code, debounce]);
+  }, [source, debounce]);
 
-  const iframeStyle = scale
-    ? {
-        width: `${100 / scale}%`,
-        height: `${100 / scale}%`,
-        transform: `scale(${scale})`,
-        transformOrigin: 'top left' as const,
-      }
-    : undefined;
+  const iframeStyle = useMemo(
+    () =>
+      scale
+        ? {
+            width: `${100 / scale}%`,
+            height: `${100 / scale}%`,
+            transform: `scale(${scale})`,
+            transformOrigin: 'top left' as const,
+          }
+        : undefined,
+    [scale],
+  );
 
   return (
     <div className={cn('relative overflow-hidden', className)}>

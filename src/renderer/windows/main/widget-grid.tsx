@@ -36,7 +36,7 @@ function WidgetCard({
     <div className="group relative overflow-hidden rounded-xl border">
       <div className="bg-background aspect-video w-full transition-all duration-200 group-hover:scale-[1.02] group-hover:blur-[2px]">
         <WidgetPreview
-          code={widget.sourceCode}
+          source={widget.source}
           className="h-full w-full"
           scale={0.5}
         />

@@ -175,11 +175,19 @@
           refreshSelect.value = String(interval);
           startRefreshTimer(interval);
 
-          var source = payload.sourceCode || '';
-          document.body.insertAdjacentHTML('beforeend', source);
+          var source = payload.source || { html: '', css: '', js: '' };
 
-          var scripts = document.body.querySelectorAll('script');
-          scripts.forEach(function (original) {
+          if (source.css) {
+            var styleEl = document.createElement('style');
+            styleEl.textContent = source.css;
+            document.head.appendChild(styleEl);
+          }
+
+          var html = source.html || '';
+          document.body.insertAdjacentHTML('beforeend', html);
+
+          var inlineScripts = document.body.querySelectorAll('script');
+          inlineScripts.forEach(function (original) {
             var fresh = document.createElement('script');
             if (original.src) {
               fresh.src = original.src;
@@ -188,6 +196,12 @@
             }
             original.parentNode.replaceChild(fresh, original);
           });
+
+          if (source.js) {
+            var scriptEl = document.createElement('script');
+            scriptEl.textContent = source.js;
+            document.body.appendChild(scriptEl);
+          }
         });
 
         window.ipcRenderer.on('widget:hover', function (_, hovered) {
