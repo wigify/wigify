@@ -6,6 +6,7 @@ interface WidgetPreviewProps {
   code: string;
   className?: string;
   debounce?: number;
+  scale?: number;
 }
 
 const DEFAULT_DEBOUNCE_MS = 0;
@@ -27,6 +28,7 @@ export default function WidgetPreview({
   code,
   className,
   debounce = DEFAULT_DEBOUNCE_MS,
+  scale,
 }: WidgetPreviewProps) {
   const [srcdoc, setSrcdoc] = useState(() => buildSrcdoc(code));
   const [loading, setLoading] = useState(true);
@@ -55,12 +57,22 @@ export default function WidgetPreview({
     };
   }, [code, debounce]);
 
+  const iframeStyle = scale
+    ? {
+        width: `${100 / scale}%`,
+        height: `${100 / scale}%`,
+        transform: `scale(${scale})`,
+        transformOrigin: 'top left' as const,
+      }
+    : undefined;
+
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative overflow-hidden', className)}>
       <iframe
         srcDoc={srcdoc}
         sandbox="allow-scripts"
-        className="h-full w-full border-0"
+        className={cn('border-0', !scale && 'h-full w-full')}
+        style={iframeStyle}
         title="Widget Preview"
         onLoad={() => setLoading(false)}
       />

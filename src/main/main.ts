@@ -33,8 +33,10 @@ export async function createMainWindow(): Promise<void> {
 
   mainWindow = await createWindow({
     type: 'main',
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
+    minWidth: 1024,
+    minHeight: 768,
     show: true,
     electronOptions: icon ? { icon } : undefined,
   });

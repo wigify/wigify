@@ -1,7 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
 import {
-  Check,
-  ChevronsUpDown,
   ChevronLeft,
   Eye,
   LayoutTemplate,
@@ -13,21 +11,9 @@ import { templates } from '@/templates';
 import type { Template } from '@/templates';
 import type { WidgetState } from '@/types';
 import { Button } from '@/renderer/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/renderer/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/renderer/components/ui/popover';
 import MonacoEditor from '@/renderer/components/widget/monaco-editor';
 import WidgetPreview from '@/renderer/components/widget/widget-preview';
+import TemplatePicker from '@/renderer/components/widget/template-picker';
 import CollapsibleSection from '@/renderer/components/shared/collapsible-section';
 import { useLocalStorage } from '@/renderer/hooks/use-local-storage';
 import { useWidgets } from '@/renderer/hooks/use-widgets';
@@ -35,7 +21,6 @@ import { cn } from '@/renderer/lib/utils';
 
 interface SidebarSections {
   settings: boolean;
-  templates: boolean;
   preview: boolean;
 }
 
@@ -49,7 +34,6 @@ const DEFAULT_TEMPLATE = templates[0];
 
 const DEFAULT_SECTIONS: SidebarSections = {
   settings: true,
-  templates: true,
   preview: true,
 };
 
@@ -62,10 +46,9 @@ export default function WidgetEditor({
 }: WidgetEditorProps) {
   const isEditing = !!widget;
 
-  const [pendingTemplate, setPendingTemplate] = useState<Template | null>(null);
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [code, setCode] = useState(widget?.sourceCode ?? DEFAULT_TEMPLATE.code);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [comboboxOpen, setComboboxOpen] = useState(false);
   const [sections, setSections] = useLocalStorage<SidebarSections>(
     'widget-editor:sidebar-sections',
     DEFAULT_SECTIONS,
@@ -92,18 +75,9 @@ export default function WidgetEditor({
     setSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const handleTemplateSelect = (templateName: string) => {
-    const template = templates.find(t => t.name === templateName);
-    if (!template) return;
-    setPendingTemplate(template);
-    setComboboxOpen(false);
-  };
-
-  const handleApplyTemplate = () => {
-    if (!pendingTemplate) return;
-    setCode(pendingTemplate.code);
-    setPendingTemplate(null);
-  };
+  const handleTemplateSelect = useCallback((template: Template) => {
+    setCode(template.code);
+  }, []);
 
   const isValidName = useMemo(() => {
     return widgetName.length > 0 && WIDGET_NAME_REGEX.test(widgetName);
@@ -204,6 +178,14 @@ export default function WidgetEditor({
         </div>
 
         <div className="titlebar-no-drag flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={() => setTemplatePickerOpen(true)}
+          >
+            <LayoutTemplate className="text-muted-foreground h-3.5 w-3.5" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -311,73 +293,6 @@ export default function WidgetEditor({
             </CollapsibleSection>
 
             <CollapsibleSection
-              icon={
-                <LayoutTemplate className="text-muted-foreground h-3.5 w-3.5" />
-              }
-              title="Templates"
-              isOpen={sections.templates}
-              onToggle={() => toggleSection('templates')}
-              className="border-border max-h-24 border-t"
-            >
-              <div className="flex items-center gap-1.5 p-2">
-                <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={comboboxOpen}
-                      className="h-8 flex-1 justify-between text-xs"
-                    >
-                      {pendingTemplate?.title ?? 'Select template...'}
-                      <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-64 p-0" align="start">
-                    <Command>
-                      <CommandInput
-                        placeholder="Search templates..."
-                        className="h-9"
-                      />
-                      <CommandList>
-                        <CommandEmpty>No template found.</CommandEmpty>
-                        <CommandGroup>
-                          {templates.map(template => (
-                            <CommandItem
-                              key={template.name}
-                              value={template.title}
-                              onSelect={() =>
-                                handleTemplateSelect(template.name)
-                              }
-                            >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  pendingTemplate?.name === template.name
-                                    ? 'opacity-100'
-                                    : 'opacity-0',
-                                )}
-                              />
-                              {template.title}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="h-8"
-                  disabled={!pendingTemplate}
-                  onClick={handleApplyTemplate}
-                >
-                  Apply
-                </Button>
-              </div>
-            </CollapsibleSection>
-
-            <CollapsibleSection
               icon={<Eye className="text-muted-foreground h-3.5 w-3.5" />}
               title="Preview"
               isOpen={sections.preview}
@@ -395,6 +310,11 @@ export default function WidgetEditor({
           </aside>
         )}
       </div>
+      <TemplatePicker
+        open={templatePickerOpen}
+        onOpenChange={setTemplatePickerOpen}
+        onSelect={handleTemplateSelect}
+      />
     </div>
   );
 }
