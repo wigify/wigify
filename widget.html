@@ -20,13 +20,6 @@
         background: transparent;
       }
       body {
-        -webkit-app-region: drag;
-      }
-      input,
-      textarea,
-      select,
-      button,
-      a {
         -webkit-app-region: no-drag;
       }
       .wigify-titlebar {
@@ -39,11 +32,11 @@
         align-items: center !important;
         justify-content: space-between !important;
         padding: 0 4px !important;
-        background: rgba(23, 23, 23, 0.75) !important;
+        background: rgba(23, 23, 23, 0.9) !important;
         z-index: 2147483647 !important;
         opacity: 0;
         transition: opacity 150ms ease;
-        -webkit-app-region: no-drag;
+        -webkit-app-region: drag;
         pointer-events: none;
       }
       .wigify-titlebar.visible {
