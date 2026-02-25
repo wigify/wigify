@@ -41,6 +41,10 @@ interface WidgetStore {
     size: { width: number; height: number };
   }) => Promise<void>;
   updateWidgetSource: (widgetName: string, code: string) => Promise<void>;
+  updateWidgetSize: (
+    widgetName: string,
+    size: { width: number; height: number },
+  ) => Promise<void>;
   deleteWidget: (widgetName: string) => Promise<void>;
   checkWidgetExists: (name: string) => Promise<boolean>;
   arrangeWidgets: () => Promise<void>;
@@ -180,6 +184,17 @@ export function useWidgetStore(): WidgetStore {
     [],
   );
 
+  const updateWidgetSize = useCallback(
+    async (
+      widgetName: string,
+      size: { width: number; height: number },
+    ): Promise<void> => {
+      if (!ipc()) throw new Error('IPC not available');
+      await ipc().invoke('widget:update-size', widgetName, size);
+    },
+    [],
+  );
+
   const deleteWidget = useCallback(
     async (widgetName: string): Promise<void> => {
       if (!ipc()) return;
@@ -215,6 +230,7 @@ export function useWidgetStore(): WidgetStore {
     closeWidget,
     createWidget,
     updateWidgetSource,
+    updateWidgetSize,
     deleteWidget,
     checkWidgetExists,
     arrangeWidgets,

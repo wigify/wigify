@@ -370,6 +370,20 @@ export async function updateWidgetSource(
   await fs.writeFile(sourcePath, code);
 }
 
+export async function updateWidgetSize(
+  widgetName: string,
+  size: { width: number; height: number },
+): Promise<void> {
+  const location = await getWidgetLocation(widgetName);
+  if (!location) throw new Error(`Widget not found: ${widgetName}`);
+
+  const manifestPath = path.join(location.path, 'package.json');
+  const content = await fs.readFile(manifestPath, 'utf-8');
+  const manifest = JSON.parse(content) as WidgetManifest;
+  manifest.size = size;
+  await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2));
+}
+
 export async function widgetExists(name: string): Promise<boolean> {
   const widgetDir = path.join(getUserWidgetsDir(), name);
   try {
