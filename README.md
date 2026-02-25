@@ -33,7 +33,6 @@
 - **System Tray** - Quick access to toggle auto-hide, arrange widgets, and manage the app from the menu bar.
 - **Auto-Update** - Automatically checks for and installs updates from GitHub releases.
 - **Dark & Light Theme** - Follows your system theme with a native glassy appearance on macOS.
-- **Cross-Platform** - Works on macOS, Windows, and Linux.
 
 ## Built With
 
