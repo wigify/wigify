@@ -30,6 +30,7 @@
 - Use the question tool for asking questions
 - Use Shadcn components and design guidelines unless custom is necessary
 - Assets (images, icons, sounds) must work in both dev and production/packaged builds
+- Use `gh` for issues and PRs
 
 ## Examples
 
