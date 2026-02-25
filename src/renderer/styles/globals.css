@@ -42,7 +42,7 @@
     --glassy-border-hover: rgba(0, 0, 0, 0.15);
     --glassy-text: rgba(0, 0, 0, 0.85);
     --glassy-text-muted: rgba(0, 0, 0, 0.55);
-    --background: transparent;
+    --background: oklch(0.967 0 0);
     --foreground: oklch(0.145 0 0);
     --card: rgba(255, 255, 255, 0.5);
     --card-foreground: oklch(0.145 0 0);
@@ -73,7 +73,7 @@
       --glassy-border-hover: rgba(255, 255, 255, 0.3);
       --glassy-text: rgba(255, 255, 255, 0.9);
       --glassy-text-muted: rgba(255, 255, 255, 0.6);
-      --background: transparent;
+      --background: oklch(0.205 0 0);
       --foreground: oklch(0.985 0 0);
       --card: rgba(255, 255, 255, 0.06);
       --card-foreground: oklch(0.985 0 0);

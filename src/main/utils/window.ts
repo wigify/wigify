@@ -30,9 +30,6 @@ const DEFAULT_CONFIG: Partial<WindowConfig> = {
 
 const MACOS_GLASSY_CONFIG: Partial<WindowConfig> = {
   titleBarStyle: 'hiddenInset',
-  vibrancy: 'under-window',
-  visualEffectState: 'active',
-  backgroundColor: '#00000000',
 };
 
 export class Window {
