@@ -10,6 +10,7 @@ import {
 import type {
   WidgetBuildResult,
   WidgetInstance,
+  WidgetSourceFiles,
   WidgetState,
   WidgetVariableValues,
 } from '@/types';
@@ -37,10 +38,13 @@ interface WidgetStore {
   closeWidget: (instanceId: string) => Promise<void>;
   createWidget: (options: {
     name: string;
-    code: string;
+    source: WidgetSourceFiles;
     size: { width: number; height: number };
   }) => Promise<void>;
-  updateWidgetSource: (widgetName: string, code: string) => Promise<void>;
+  updateWidgetSource: (
+    widgetName: string,
+    source: WidgetSourceFiles,
+  ) => Promise<void>;
   updateWidgetSize: (
     widgetName: string,
     size: { width: number; height: number },
@@ -167,7 +171,7 @@ export function useWidgetStore(): WidgetStore {
   const createWidget = useCallback(
     async (options: {
       name: string;
-      code: string;
+      source: WidgetSourceFiles;
       size: { width: number; height: number };
     }): Promise<void> => {
       if (!ipc()) throw new Error('IPC not available');
@@ -177,9 +181,9 @@ export function useWidgetStore(): WidgetStore {
   );
 
   const updateWidgetSource = useCallback(
-    async (widgetName: string, code: string): Promise<void> => {
+    async (widgetName: string, source: WidgetSourceFiles): Promise<void> => {
       if (!ipc()) throw new Error('IPC not available');
-      await ipc().invoke('widget:update-source', widgetName, code);
+      await ipc().invoke('widget:update-source', widgetName, source);
     },
     [],
   );

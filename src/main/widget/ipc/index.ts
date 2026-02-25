@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto';
 import type {
   WidgetBuildResult,
   WidgetInstance,
+  WidgetSourceFiles,
   WidgetState,
   WidgetVariableValues,
 } from '@/types';
@@ -212,8 +213,8 @@ export function registerWidgetIpc(): void {
 
   ipcMain.handle(
     'widget:update-source',
-    async (_, widgetName: string, code: string): Promise<void> => {
-      await updateWidgetSource(widgetName, code);
+    async (_, widgetName: string, source: WidgetSourceFiles): Promise<void> => {
+      await updateWidgetSource(widgetName, source);
       await notifyWidgetChanged();
     },
   );

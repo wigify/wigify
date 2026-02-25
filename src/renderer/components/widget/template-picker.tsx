@@ -31,7 +31,7 @@ function TemplateCard({
     >
       <div className="pointer-events-none relative h-24 w-full overflow-hidden">
         <WidgetPreview
-          code={template.code}
+          source={template.source}
           className="h-full w-full"
           scale={0.5}
         />

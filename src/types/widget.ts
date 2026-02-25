@@ -53,10 +53,16 @@ export interface WidgetInstance {
   refreshInterval?: number;
 }
 
+export interface WidgetSourceFiles {
+  html: string;
+  css: string;
+  js: string;
+}
+
 export interface WidgetState {
   manifest: WidgetManifest;
   path: string;
-  sourceCode: string;
+  source: WidgetSourceFiles;
   isBuilt: boolean;
   buildError?: string;
   instances: WidgetInstance[];
@@ -77,7 +83,7 @@ export interface WidgetBuildResult {
 export interface WidgetWindowPayload {
   instanceId: string;
   widgetName: string;
-  sourceCode: string;
+  source: WidgetSourceFiles;
   variables: WidgetVariableValues;
   size: WidgetSize;
   refreshInterval?: number;

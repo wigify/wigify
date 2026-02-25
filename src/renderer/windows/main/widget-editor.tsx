@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { templates } from '@/templates';
 import type { Template } from '@/templates';
-import type { WidgetState } from '@/types';
+import type { WidgetSourceFiles, WidgetState } from '@/types';
 import { Button } from '@/renderer/components/ui/button';
 import MonacoEditor from '@/renderer/components/widget/monaco-editor';
 import WidgetPreview from '@/renderer/components/widget/widget-preview';
@@ -18,6 +18,8 @@ import CollapsibleSection from '@/renderer/components/shared/collapsible-section
 import { useLocalStorage } from '@/renderer/hooks/use-local-storage';
 import { useWidgets } from '@/renderer/hooks/use-widgets';
 import { cn } from '@/renderer/lib/utils';
+
+type EditorTab = 'html' | 'css' | 'js';
 
 interface SidebarSections {
   settings: boolean;
@@ -39,6 +41,16 @@ const DEFAULT_SECTIONS: SidebarSections = {
 
 const WIDGET_NAME_REGEX = /^[a-z][a-z0-9-]*$/;
 
+const TABS: {
+  id: EditorTab;
+  label: string;
+  language: 'html' | 'css' | 'javascript';
+}[] = [
+  { id: 'html', label: 'widget.html', language: 'html' },
+  { id: 'css', label: 'style.css', language: 'css' },
+  { id: 'js', label: 'script.js', language: 'javascript' },
+];
+
 export default function WidgetEditor({
   widget,
   onBack,
@@ -47,7 +59,14 @@ export default function WidgetEditor({
   const isEditing = !!widget;
 
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
-  const [code, setCode] = useState(widget?.sourceCode ?? DEFAULT_TEMPLATE.code);
+  const [activeTab, setActiveTab] = useState<EditorTab>('html');
+  const [html, setHtml] = useState(
+    widget?.source.html ?? DEFAULT_TEMPLATE.source.html,
+  );
+  const [css, setCss] = useState(
+    widget?.source.css ?? DEFAULT_TEMPLATE.source.css,
+  );
+  const [js, setJs] = useState(widget?.source.js ?? DEFAULT_TEMPLATE.source.js);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sections, setSections] = useLocalStorage<SidebarSections>(
     'widget-editor:sidebar-sections',
@@ -71,12 +90,19 @@ export default function WidgetEditor({
     addWidgetToScreen,
   } = useWidgets();
 
+  const source: WidgetSourceFiles = useMemo(
+    () => ({ html, css, js }),
+    [html, css, js],
+  );
+
   const toggleSection = (section: keyof SidebarSections) => {
     setSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
   const handleTemplateSelect = useCallback((template: Template) => {
-    setCode(template.code);
+    setHtml(template.source.html);
+    setCss(template.source.css);
+    setJs(template.source.js);
   }, []);
 
   const isValidName = useMemo(() => {
@@ -91,21 +117,29 @@ export default function WidgetEditor({
     );
   }, [isEditing, widget, widgetWidth, widgetHeight]);
 
+  const sourceChanged = useMemo(() => {
+    if (!isEditing) return false;
+    return (
+      html !== widget.source.html ||
+      css !== widget.source.css ||
+      js !== widget.source.js
+    );
+  }, [isEditing, widget, html, css, js]);
+
   const canSave = useMemo(() => {
-    if (saving || code.trim().length === 0) return false;
+    if (saving) return false;
     if (widgetWidth < 1 || widgetHeight < 1) return false;
 
-    if (isEditing) return code !== widget.sourceCode || sizeChanged;
+    if (isEditing) return sourceChanged || sizeChanged;
 
     return isValidName;
   }, [
     saving,
-    code,
     isEditing,
-    widget,
     isValidName,
     widgetWidth,
     widgetHeight,
+    sourceChanged,
     sizeChanged,
   ]);
 
@@ -119,14 +153,14 @@ export default function WidgetEditor({
 
     try {
       if (isEditing) {
-        if (code !== widget.sourceCode) {
-          await updateWidgetSource(widget.manifest.name, code);
+        if (sourceChanged) {
+          await updateWidgetSource(widget.manifest.name, source);
         }
         if (sizeChanged) {
           await updateWidgetSize(widget.manifest.name, size);
         }
       } else {
-        await createWidget({ name: widgetName, code, size });
+        await createWidget({ name: widgetName, source, size });
         await addWidgetToScreen(widgetName);
       }
       onSave?.();
@@ -142,7 +176,8 @@ export default function WidgetEditor({
     widgetName,
     widgetWidth,
     widgetHeight,
-    code,
+    source,
+    sourceChanged,
     sizeChanged,
     createWidget,
     updateWidgetSource,
@@ -156,6 +191,14 @@ export default function WidgetEditor({
   }, []);
 
   const title = isEditing ? widget.manifest.title : 'Add Widget';
+
+  const activeTabConfig = TABS.find(t => t.id === activeTab)!;
+  const tabValues: Record<EditorTab, string> = { html, css, js };
+  const tabSetters: Record<EditorTab, (v: string) => void> = {
+    html: setHtml,
+    css: setCss,
+    js: setJs,
+  };
 
   return (
     <div className="bg-background flex h-screen w-screen flex-col overflow-hidden">
@@ -218,9 +261,26 @@ export default function WidgetEditor({
 
       <div className="window-content flex min-h-0 flex-1">
         <section className="flex min-w-0 flex-1 flex-col">
+          <div className="border-border flex shrink-0 border-b">
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'px-3 py-1.5 text-xs font-medium transition-colors',
+                  activeTab === tab.id
+                    ? 'text-foreground border-foreground border-b-2'
+                    : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
           <MonacoEditor
-            value={code}
-            onChange={setCode}
+            value={tabValues[activeTab]}
+            onChange={tabSetters[activeTab]}
+            language={activeTabConfig.language}
             className="min-h-0 flex-1"
           />
         </section>
@@ -301,7 +361,7 @@ export default function WidgetEditor({
             >
               <div className="flex flex-1 items-center justify-center overflow-hidden p-3">
                 <WidgetPreview
-                  code={code}
+                  source={source}
                   debounce={300}
                   className="h-full w-full overflow-hidden rounded-lg"
                 />
