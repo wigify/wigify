@@ -17,4 +17,12 @@ export {
   updateSetting,
 } from '@/main/system/settings';
 
-export { initAutoUpdater, registerUpdaterIpc } from '@/main/system/updater';
+export {
+  checkForUpdates,
+  getUpdateStatus,
+  initAutoUpdater,
+  installUpdate,
+  registerUpdaterIpc,
+  setOnStatusChange,
+} from '@/main/system/updater';
+export type { UpdateState } from '@/main/system/updater';
