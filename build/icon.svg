@@ -1,31 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
-  <defs>
-    <linearGradient id="bg" x1="0.25" y1="0" x2="0.75" y2="1" gradientUnits="objectBoundingBox">
-      <stop offset="0" stop-color="#b11717"/>
-      <stop offset="0.5" stop-color="#DC2626"/>
-      <stop offset="1" stop-color="#F97316"/>
-    </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.125"/>
-    </filter>
-  </defs>
-  <rect width="1024" height="1024" rx="228" ry="228" fill="url(#bg)"/>
-  <!-- 5-col x 3-row grid: W Grid at (152, 212), 720x600, gap 16 between cols -->
-  <!-- Each column: (720 - 4*16) / 5 = 131.2px wide -->
-  <!-- space-around rows: each row ~167px, with even distribution in 600px -->
-  <!-- Row heights: ~167px, Row Y positions: ~232, 409, 586 (approx with space-around) -->
-
-  <!-- Row 1: col 1 and col 5 (full white, shadow) -->
-  <rect x="152" y="245" width="131" height="158" rx="24" ry="24" fill="#FFFFFF" filter="url(#shadow)"/>
-  <rect x="741" y="245" width="131" height="158" rx="24" ry="24" fill="#FFFFFF" filter="url(#shadow)"/>
-
-  <!-- Row 2: col 1 (0.93 white), col 3 (0.8 white), col 5 (0.93 white) -->
-  <rect x="152" y="420" width="131" height="158" rx="24" ry="24" fill="#FFFFFFEE" filter="url(#shadow)"/>
-  <rect x="446" y="420" width="131" height="158" rx="24" ry="24" fill="#FFFFFFCC" filter="url(#shadow)"/>
-  <rect x="741" y="420" width="131" height="158" rx="24" ry="24" fill="#FFFFFFEE" filter="url(#shadow)"/>
-
-  <!-- Row 3: col 1 (0.93 white), col 3 (0.8 white), col 5 (0.93 white) -->
-  <rect x="152" y="595" width="131" height="158" rx="24" ry="24" fill="#FFFFFFEE" filter="url(#shadow)"/>
-  <rect x="446" y="595" width="131" height="158" rx="24" ry="24" fill="#FFFFFFCC" filter="url(#shadow)"/>
-  <rect x="741" y="595" width="131" height="158" rx="24" ry="24" fill="#FFFFFFEE" filter="url(#shadow)"/>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="81" y="80" width="864" height="864" rx="216" fill="url(#paint0_linear_7001_10)"/>
+<rect x="288" y="292" width="242" height="440" rx="37" fill="#FFFEFE" fill-opacity="0.7"/>
+<rect x="559" y="292" width="180" height="258" rx="37" fill="#CCCCCC" fill-opacity="0.55"/>
+<rect x="559" y="565" width="180" height="167" rx="37" fill="#CCCCCC" fill-opacity="0.8"/>
+<defs>
+<linearGradient id="paint0_linear_7001_10" x1="513" y1="80" x2="513" y2="944" gradientUnits="userSpaceOnUse">
+<stop stop-color="#BD2629"/>
+<stop offset="1" stop-color="#C9165A"/>
+</linearGradient>
+</defs>
 </svg>
