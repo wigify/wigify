@@ -50,10 +50,8 @@ async function buildContextMenu(): Promise<Menu> {
     {
       label: 'Show Window',
       click: async () => {
-        const { mainWindow } = await import('@/main/main');
-        if (!mainWindow || mainWindow.isDestroyed()) return;
-        mainWindow.show();
-        mainWindow.focus();
+        const { createMainWindow } = await import('@/main/main');
+        await createMainWindow();
       },
     },
     { type: 'separator' },
