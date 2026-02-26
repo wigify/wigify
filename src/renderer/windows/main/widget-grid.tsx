@@ -62,7 +62,7 @@ function WidgetCard({
             <Button
               variant="secondary"
               size="icon"
-              className="pointer-events-auto h-7 w-7 rounded-lg"
+              className="pointer-events-auto h-7 w-7 rounded-lg bg-black/60 text-white hover:bg-black/80"
             >
               <MoreHorizontal className="h-3.5 w-3.5" />
             </Button>
