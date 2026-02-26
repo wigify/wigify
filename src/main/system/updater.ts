@@ -9,6 +9,7 @@ export type UpdateState =
   | 'available'
   | 'downloading'
   | 'ready'
+  | 'up-to-date'
   | 'error';
 
 interface UpdateStatus {
@@ -44,9 +45,17 @@ export function getUpdateStatus(): UpdateStatus {
   return currentStatus;
 }
 
+function simulateUpdateCheck(): void {
+  updateStatus({ state: 'checking' });
+  setTimeout(() => {
+    updateStatus({ state: 'up-to-date' });
+    setTimeout(() => updateStatus({ state: 'idle' }), 3000);
+  }, 1500);
+}
+
 export function checkForUpdates(): void {
   if (isDev) {
-    updateStatus({ state: 'idle' });
+    simulateUpdateCheck();
     return;
   }
   updateStatus({ state: 'checking' });
@@ -84,7 +93,8 @@ export function initAutoUpdater(): void {
   });
 
   autoUpdater.on('update-not-available', () => {
-    updateStatus({ state: 'idle' });
+    updateStatus({ state: 'up-to-date' });
+    setTimeout(() => updateStatus({ state: 'idle' }), 3000);
   });
 
   autoUpdater.on('error', error => {

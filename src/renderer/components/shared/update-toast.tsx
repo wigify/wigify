@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, CheckCircle, Download, Loader2, X } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle,
+  CircleCheck,
+  Download,
+  Loader2,
+  X,
+} from 'lucide-react';
 
 import { Progress } from '@/renderer/components/ui/progress';
 
@@ -9,6 +16,7 @@ type UpdateState =
   | 'available'
   | 'downloading'
   | 'ready'
+  | 'up-to-date'
   | 'error';
 
 interface UpdateStatus {
@@ -58,7 +66,7 @@ export default function UpdateToast() {
     setDismissed(true);
   }, []);
 
-  if (status.state === 'idle' || status.state === 'checking' || dismissed) {
+  if (status.state === 'idle' || dismissed) {
     return null;
   }
 
@@ -66,6 +74,18 @@ export default function UpdateToast() {
     <div className="border-border bg-popover text-popover-foreground fixed right-4 bottom-4 z-50 flex min-w-72 flex-col gap-2 rounded-lg border p-4 text-sm shadow-lg">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
+          {status.state === 'checking' && (
+            <>
+              <Loader2 className="text-primary h-4 w-4 shrink-0 animate-spin" />
+              <span>Checking for updates...</span>
+            </>
+          )}
+          {status.state === 'up-to-date' && (
+            <>
+              <CircleCheck className="h-4 w-4 shrink-0 text-green-500" />
+              <span>You're up to date</span>
+            </>
+          )}
           {status.state === 'available' && (
             <>
               <Download className="text-primary h-4 w-4 shrink-0" />
