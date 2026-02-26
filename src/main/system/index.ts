@@ -5,6 +5,8 @@ export {
   removeWidgetFromTracking,
 } from '@/main/system/cursor-proximity';
 
+export { registerFetchProxyIpc } from '@/main/system/fetch-proxy';
+
 export {
   encryptSecret,
   decryptSecret,
