@@ -38,6 +38,12 @@ async function openMainWindowAndUpdate(): Promise<void> {
   installUpdate();
 }
 
+async function openMainWindowAndCheckForUpdates(): Promise<void> {
+  const { createMainWindow } = await import('@/main/main');
+  await createMainWindow();
+  checkForUpdates();
+}
+
 function getUpdateMenuItem(): Electron.MenuItemConstructorOptions | null {
   const status = getUpdateStatus();
 
@@ -64,12 +70,12 @@ function getUpdateMenuItem(): Electron.MenuItemConstructorOptions | null {
       return {
         label: 'Check for Updates',
         sublabel: 'Last check failed',
-        click: checkForUpdates,
+        click: openMainWindowAndCheckForUpdates,
       };
     default:
       return {
         label: 'Check for Updates',
-        click: checkForUpdates,
+        click: openMainWindowAndCheckForUpdates,
       };
   }
 }
