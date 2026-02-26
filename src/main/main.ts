@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { createTray } from '@/main/menu';
 import {
   initAutoUpdater,
+  registerFetchProxyIpc,
   registerUpdaterIpc,
   startCursorProximityTracking,
 } from '@/main/system';
@@ -65,6 +66,7 @@ async function initializeApp(): Promise<void> {
   await ensureConfigDirectories();
   registerWidgetIpc();
   registerUpdaterIpc();
+  registerFetchProxyIpc();
   await createTray();
 
   await createMainWindow();

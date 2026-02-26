@@ -131,6 +131,65 @@
     </div>
     <script>
       (function () {
+        var nativeFetch = window.fetch.bind(window);
+
+        window.fetch = function (input, init) {
+          var url =
+            typeof input === 'string'
+              ? input
+              : input instanceof URL
+                ? input.toString()
+                : input instanceof Request
+                  ? input.url
+                  : String(input);
+
+          if (url.startsWith('data:') || url.startsWith('blob:')) {
+            return nativeFetch(input, init);
+          }
+
+          var method = (init && init.method) || 'GET';
+          var headers = {};
+          if (init && init.headers) {
+            if (init.headers instanceof Headers) {
+              init.headers.forEach(function (v, k) {
+                headers[k] = v;
+              });
+            } else if (Array.isArray(init.headers)) {
+              init.headers.forEach(function (pair) {
+                headers[pair[0]] = pair[1];
+              });
+            } else {
+              headers = Object.assign({}, init.headers);
+            }
+          }
+
+          var bodyPromise =
+            init && init.body != null
+              ? typeof init.body === 'string'
+                ? Promise.resolve(init.body)
+                : init.body instanceof Blob
+                  ? init.body.text()
+                  : Promise.resolve(String(init.body))
+              : Promise.resolve(null);
+
+          return bodyPromise.then(function (body) {
+            return window.ipcRenderer
+              .invoke('fetch:request', {
+                url: url,
+                method: method.toUpperCase(),
+                headers: headers,
+                body: body,
+              })
+              .then(function (res) {
+                return new Response(res.body, {
+                  status: res.status,
+                  statusText: res.statusText,
+                  headers: res.headers,
+                });
+              });
+          });
+        };
+
         var payload = null;
 
         var wigify = {
@@ -189,6 +248,7 @@
           var inlineScripts = document.body.querySelectorAll('script');
           inlineScripts.forEach(function (original) {
             var fresh = document.createElement('script');
+            if (original.type) fresh.type = original.type;
             if (original.src) {
               fresh.src = original.src;
             } else {
