@@ -69,3 +69,45 @@ jobs:
           git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
           git tag "v${{ github.event.inputs.version }}"
           git push origin HEAD --tags
+
+      - name: Update Homebrew tap
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          ZIP_FILE="release/${VERSION}/Wigify-Mac-${VERSION}-arm64.zip"
+          SHA256=$(shasum -a 256 "$ZIP_FILE" | awk '{print $1}')
+
+          git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/wigify/homebrew-tap.git
+          cd homebrew-tap
+
+          cat > Casks/wigify.rb << EOF
+          cask "wigify" do
+            version "$VERSION"
+            sha256 "$SHA256"
+
+            url "https://github.com/wigify/wigify/releases/download/v#{version}/Wigify-Mac-#{version}-arm64.zip"
+            name "Wigify"
+            desc "Create and display custom HTML/CSS/JS widgets on your desktop"
+            homepage "https://github.com/wigify/wigify"
+
+            livecheck do
+              url :url
+              strategy :github_latest
+            end
+
+            app "Wigify.app"
+
+            zap trash: [
+              "~/Library/Application Support/wigify",
+              "~/Library/Preferences/com.wigify.app.plist",
+              "~/Library/Saved Application State/com.wigify.app.savedState",
+            ]
+          end
+          EOF
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Casks/wigify.rb
+          git commit -m "Update wigify to $VERSION"
+          git push

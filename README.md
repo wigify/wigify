@@ -9,8 +9,22 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/wigify/wigify/releases">Download</a> · <a href="#features">Features</a> · <a href="#contributing">Contributing</a> · <a href="#license">License</a>
+  <a href="https://github.com/wigify/wigify/releases">Download</a> · <a href="#installation">Installation</a> · <a href="#features">Features</a> · <a href="#contributing">Contributing</a> · <a href="#license">License</a>
 </p>
+
+---
+
+## Installation
+
+### Homebrew (macOS)
+
+```bash
+brew install wigify/tap/wigify
+```
+
+### Manual Download
+
+Download the latest release from the [releases page](https://github.com/wigify/wigify/releases).
 
 ---
 
