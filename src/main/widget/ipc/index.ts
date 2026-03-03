@@ -1,5 +1,6 @@
-import { ipcMain, shell } from 'electron';
+import { app, ipcMain, shell } from 'electron';
 import { randomUUID } from 'node:crypto';
+import path from 'node:path';
 
 import type {
   WidgetBuildResult,
@@ -32,7 +33,11 @@ import {
 } from '@/main/widget/fs';
 import type { CreateWidgetOptions } from '@/main/widget/fs';
 import { arrangeAllWidgets, findNextGridPosition } from '@/main/widget/grid';
-import { closeWidgetWindow, spawnWidgetWindow } from '@/main/widget/manager';
+import {
+  closeAllWidgetWindows,
+  closeWidgetWindow,
+  spawnWidgetWindow,
+} from '@/main/widget/manager';
 
 async function notifyWidgetChanged(): Promise<void> {
   const { mainWindow } = await import('@/main/main');
@@ -238,5 +243,31 @@ export function registerWidgetIpc(): void {
   ipcMain.handle('widget:arrange', async (): Promise<void> => {
     await arrangeAllWidgets();
     await notifyWidgetChanged();
+  });
+
+  ipcMain.handle('widget:reload-all', async (): Promise<void> => {
+    closeAllWidgetWindows();
+
+    const widgets = await listAllWidgets();
+    for (const widget of widgets) {
+      await buildWidget(widget.manifest.name);
+    }
+
+    const instances = await getEnabledWidgetInstances();
+    for (const instance of instances) {
+      await spawnWidgetWindow(instance);
+    }
+
+    await notifyWidgetChanged();
+  });
+
+  ipcMain.handle('widget:open-widgets-dir', async (): Promise<void> => {
+    const widgetsDir = path.join(
+      app.getPath('home'),
+      '.config',
+      'wigify',
+      'widgets',
+    );
+    await shell.openPath(widgetsDir);
   });
 }

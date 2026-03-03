@@ -11,6 +11,12 @@ import { templates } from '@/templates';
 import type { Template } from '@/templates';
 import type { WidgetSourceFiles, WidgetState } from '@/types';
 import { Button } from '@/renderer/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/renderer/components/ui/tooltip';
 import MonacoEditor from '@/renderer/components/widget/monaco-editor';
 import WidgetPreview from '@/renderer/components/widget/widget-preview';
 import TemplatePicker from '@/renderer/components/widget/template-picker';
@@ -208,55 +214,77 @@ export default function WidgetEditor({
           isMac ? 'pr-3 pl-20' : 'px-3',
         )}
       >
-        <div className="titlebar-no-drag flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={onBack}
-          >
-            <ChevronLeft className="text-muted-foreground h-3.5 w-3.5" />
-          </Button>
-          <span className="text-foreground text-sm font-medium">{title}</span>
-        </div>
+        <TooltipProvider delayDuration={300}>
+          <div className="titlebar-no-drag flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={onBack}
+                >
+                  <ChevronLeft className="text-muted-foreground h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Back</TooltipContent>
+            </Tooltip>
+            <span className="text-foreground text-sm font-medium">{title}</span>
+          </div>
 
-        <div className="titlebar-no-drag flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={() => setTemplatePickerOpen(true)}
-          >
-            <LayoutTemplate className="text-muted-foreground h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            disabled={!canSave}
-            onClick={handleSave}
-          >
-            <Save
-              className={cn(
-                'h-3.5 w-3.5',
-                canSave ? 'text-foreground' : 'text-muted-foreground',
-              )}
-            />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={() => setSidebarOpen(prev => !prev)}
-          >
-            <PanelRight
-              className={cn(
-                'h-3.5 w-3.5',
-                sidebarOpen ? 'text-foreground' : 'text-muted-foreground',
-              )}
-            />
-          </Button>
-        </div>
+          <div className="titlebar-no-drag flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setTemplatePickerOpen(true)}
+                >
+                  <LayoutTemplate className="text-muted-foreground h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Templates</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  disabled={!canSave}
+                  onClick={handleSave}
+                >
+                  <Save
+                    className={cn(
+                      'h-3.5 w-3.5',
+                      canSave ? 'text-foreground' : 'text-muted-foreground',
+                    )}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Save</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setSidebarOpen(prev => !prev)}
+                >
+                  <PanelRight
+                    className={cn(
+                      'h-3.5 w-3.5',
+                      sidebarOpen ? 'text-foreground' : 'text-muted-foreground',
+                    )}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Toggle sidebar</TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </div>
 
       <div className="window-content flex min-h-0 flex-1">
