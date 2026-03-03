@@ -15,6 +15,7 @@ import {
 } from '@/main/system/updater';
 import { isDev } from '@/main/utils/env';
 import { arrangeAllWidgets } from '@/main/widget/grid';
+import { setWidgetsAlwaysOnTop } from '@/main/widget/manager';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.join(__dirname, '..');
@@ -98,6 +99,15 @@ async function buildContextMenu(): Promise<Menu> {
         }
 
         stopCursorProximityTracking();
+      },
+    },
+    {
+      label: 'Always on top',
+      type: 'checkbox',
+      checked: settings.allwaysOnTop,
+      click: async menuItem => {
+        await updateSetting('allwaysOnTop', menuItem.checked);
+        setWidgetsAlwaysOnTop(menuItem.checked);
       },
     },
     {

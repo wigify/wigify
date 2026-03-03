@@ -9,12 +9,23 @@ const SETTINGS_FILE = path.join(CONFIG_DIR, 'settings.json');
 
 const DEFAULT_SETTINGS: AppSettings = {
   autoHideWidgets: true,
+  allwaysOnTop: true,
 };
 
 export async function loadSettings(): Promise<AppSettings> {
   try {
     const content = await fs.readFile(SETTINGS_FILE, 'utf-8');
-    const saved = JSON.parse(content) as Partial<AppSettings>;
+    const saved = JSON.parse(content) as Partial<AppSettings> & {
+      pinWidgetsToDesktop?: boolean;
+    };
+
+    if (
+      typeof saved.allwaysOnTop === 'undefined' &&
+      typeof saved.pinWidgetsToDesktop === 'boolean'
+    ) {
+      saved.allwaysOnTop = !saved.pinWidgetsToDesktop;
+    }
+
     return { ...DEFAULT_SETTINGS, ...saved };
   } catch {
     return { ...DEFAULT_SETTINGS };
