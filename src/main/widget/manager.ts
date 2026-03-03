@@ -4,6 +4,7 @@ import type { WidgetInstance, WidgetWindowPayload, WindowData } from '@/types';
 
 import { createWindow, Window } from '@/main/utils/window';
 import { removeWidgetFromTracking } from '@/main/system/cursor-proximity';
+import { loadSettings } from '@/main/system/settings';
 
 import {
   getWidgetInstance,
@@ -48,6 +49,8 @@ export async function spawnWidgetWindow(
     return null;
   }
 
+  const settings = await loadSettings();
+
   const payload: WidgetWindowPayload = {
     instanceId: instance.id,
     widgetName: instance.widgetName,
@@ -83,11 +86,13 @@ export async function spawnWidgetWindow(
     minimizable: false,
     maximizable: false,
     hasShadow: false,
-    focusable: false,
+    focusable: true,
     show: true,
     titleBarStyle: 'hidden',
     trafficLightPosition: { x: -100, y: -100 },
   });
+
+  applyAlwaysOnTop(window.getBrowserWindow(), settings.allwaysOnTop);
 
   widgetPayloads.set(instance.id, windowData);
   window.getBrowserWindow().webContents.send('load', windowData);
@@ -211,6 +216,25 @@ export function closeAllWidgetWindows(): void {
     }
     widgetWindows.delete(instanceId);
     widgetPayloads.delete(instanceId);
+  }
+}
+
+function applyAlwaysOnTop(
+  browserWindow: Electron.BrowserWindow,
+  allwaysOnTop: boolean,
+): void {
+  if (allwaysOnTop) {
+    browserWindow.setAlwaysOnTop(true, 'floating');
+    return;
+  }
+
+  browserWindow.setAlwaysOnTop(true, 'normal', -1);
+}
+
+export function setWidgetsAlwaysOnTop(allwaysOnTop: boolean): void {
+  for (const [, window] of widgetWindows) {
+    if (window.isDestroyed()) continue;
+    applyAlwaysOnTop(window.getBrowserWindow(), allwaysOnTop);
   }
 }
 

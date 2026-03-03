@@ -48,6 +48,7 @@ export {
   closeAllWidgetWindows,
   updateWidgetWindowPosition,
   updateWidgetWindowSize,
+  setWidgetsAlwaysOnTop,
   setAppQuitting,
 } from '@/main/widget/manager';
 

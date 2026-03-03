@@ -153,6 +153,7 @@ Widgets automatically hide and become click-through when the cursor approaches a
 Wigify lives in the system tray (menu bar on macOS) for quick access:
 
 - **Auto-hide Widgets**: Toggle cursor dodge on/off (enabled by default)
+- **Always on top**: Toggle whether widgets stay above other app windows
 - **Show Window**: Bring the main Wigify window to the front
 - **Quit**: Exit the application
 
