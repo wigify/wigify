@@ -1,0 +1,107 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: white;
+  background: rgb(22, 18, 28);
+  padding: 14px 16px;
+  overflow: hidden;
+  gap: 10px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.4;
+}
+.date-str {
+  font-size: 10px;
+  opacity: 0.2;
+}
+.habits {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+.habit {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: default;
+}
+.check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+}
+.check::after {
+  content: '';
+  display: none;
+  width: 10px;
+  height: 6px;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+.check.done {
+  background: #8b5cf6;
+  border-color: #8b5cf6;
+}
+.check.done::after {
+  display: block;
+}
+.habit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.habit-name {
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+.dots {
+  display: flex;
+  gap: 3px;
+}
+.dot {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.07);
+}
+.dot.done {
+  background: #8b5cf6;
+}
+.streak {
+  font-size: 12px;
+  opacity: 0.35;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.streak.hot {
+  opacity: 1;
+  color: #f97316;
+}

@@ -28,6 +28,38 @@ import weatherHtml from '../../widget-templates/weather/widget.html?raw';
 import weatherCss from '../../widget-templates/weather/style.css?raw';
 import weatherJs from '../../widget-templates/weather/script.js?raw';
 
+import currencyConverterHtml from '../../widget-templates/currency-converter/widget.html?raw';
+import currencyConverterCss from '../../widget-templates/currency-converter/style.css?raw';
+import currencyConverterJs from '../../widget-templates/currency-converter/script.js?raw';
+
+import githubActivityHtml from '../../widget-templates/github-activity/widget.html?raw';
+import githubActivityCss from '../../widget-templates/github-activity/style.css?raw';
+import githubActivityJs from '../../widget-templates/github-activity/script.js?raw';
+
+import worldClocksHtml from '../../widget-templates/world-clocks/widget.html?raw';
+import worldClocksCss from '../../widget-templates/world-clocks/style.css?raw';
+import worldClocksJs from '../../widget-templates/world-clocks/script.js?raw';
+
+import cryptoTickerHtml from '../../widget-templates/crypto-ticker/widget.html?raw';
+import cryptoTickerCss from '../../widget-templates/crypto-ticker/style.css?raw';
+import cryptoTickerJs from '../../widget-templates/crypto-ticker/script.js?raw';
+
+import habitTrackerHtml from '../../widget-templates/habit-tracker/widget.html?raw';
+import habitTrackerCss from '../../widget-templates/habit-tracker/style.css?raw';
+import habitTrackerJs from '../../widget-templates/habit-tracker/script.js?raw';
+
+import networkSpeedHtml from '../../widget-templates/network-speed/widget.html?raw';
+import networkSpeedCss from '../../widget-templates/network-speed/style.css?raw';
+import networkSpeedJs from '../../widget-templates/network-speed/script.js?raw';
+
+import wordOfDayHtml from '../../widget-templates/word-of-day/widget.html?raw';
+import wordOfDayCss from '../../widget-templates/word-of-day/style.css?raw';
+import wordOfDayJs from '../../widget-templates/word-of-day/script.js?raw';
+
+import ipInfoHtml from '../../widget-templates/ip-info/widget.html?raw';
+import ipInfoCss from '../../widget-templates/ip-info/style.css?raw';
+import ipInfoJs from '../../widget-templates/ip-info/script.js?raw';
+
 export interface Template {
   name: string;
   title: string;
@@ -79,6 +111,78 @@ export const templates: Template[] = [
       html: digitalClockHtml,
       css: digitalClockCss,
       js: digitalClockJs,
+    },
+  },
+  {
+    name: 'currency-converter',
+    title: toTitle('currency-converter'),
+    source: {
+      html: currencyConverterHtml,
+      css: currencyConverterCss,
+      js: currencyConverterJs,
+    },
+  },
+  {
+    name: 'github-activity',
+    title: toTitle('github-activity'),
+    source: {
+      html: githubActivityHtml,
+      css: githubActivityCss,
+      js: githubActivityJs,
+    },
+  },
+  {
+    name: 'world-clocks',
+    title: toTitle('world-clocks'),
+    source: {
+      html: worldClocksHtml,
+      css: worldClocksCss,
+      js: worldClocksJs,
+    },
+  },
+  {
+    name: 'crypto-ticker',
+    title: toTitle('crypto-ticker'),
+    source: {
+      html: cryptoTickerHtml,
+      css: cryptoTickerCss,
+      js: cryptoTickerJs,
+    },
+  },
+  {
+    name: 'habit-tracker',
+    title: toTitle('habit-tracker'),
+    source: {
+      html: habitTrackerHtml,
+      css: habitTrackerCss,
+      js: habitTrackerJs,
+    },
+  },
+  {
+    name: 'network-speed',
+    title: toTitle('network-speed'),
+    source: {
+      html: networkSpeedHtml,
+      css: networkSpeedCss,
+      js: networkSpeedJs,
+    },
+  },
+  {
+    name: 'word-of-day',
+    title: toTitle('word-of-day'),
+    source: {
+      html: wordOfDayHtml,
+      css: wordOfDayCss,
+      js: wordOfDayJs,
+    },
+  },
+  {
+    name: 'ip-info',
+    title: toTitle('ip-info'),
+    source: {
+      html: ipInfoHtml,
+      css: ipInfoCss,
+      js: ipInfoJs,
     },
   },
 ];

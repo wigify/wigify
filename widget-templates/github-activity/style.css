@@ -1,0 +1,120 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: white;
+  background: rgb(13, 17, 23);
+  padding: 14px 16px;
+  overflow: hidden;
+  gap: 12px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.avatar-wrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  object-fit: cover;
+}
+.avatar-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  opacity: 0.5;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.username {
+  font-size: 14px;
+  font-weight: 600;
+}
+.streak {
+  font-size: 11px;
+  opacity: 0.45;
+}
+.streak span {
+  color: #f97316;
+  opacity: 1;
+  font-weight: 700;
+}
+.stats-right {
+  display: flex;
+  gap: 14px;
+}
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.stat-num {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #39d353;
+}
+.stat-lbl {
+  font-size: 9px;
+  opacity: 0.3;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.grid-wrap {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-content: flex-start;
+}
+.cell {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  transition: background 0.2s;
+}
+.cell.l1 {
+  background: #0e4429;
+}
+.cell.l2 {
+  background: #006d32;
+}
+.cell.l3 {
+  background: #26a641;
+}
+.cell.l4 {
+  background: #39d353;
+}
