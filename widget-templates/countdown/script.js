@@ -6,10 +6,6 @@
       : now.getFullYear() + 1;
   var target = new Date(targetYear, 0, 1);
 
-  var circumference = 2 * Math.PI * 12;
-  var progressEl = document.getElementById('progress');
-  progressEl.style.strokeDasharray = circumference;
-
   function pad(n) {
     return n < 10 ? '0' + n : String(n);
   }
@@ -34,9 +30,6 @@
     document.getElementById('hours').textContent = pad(h);
     document.getElementById('mins').textContent = pad(m);
     document.getElementById('secs').textContent = pad(s);
-
-    var secProgress = 1 - s / 60;
-    progressEl.style.strokeDashoffset = circumference * secProgress;
 
     requestAnimationFrame(update);
   }

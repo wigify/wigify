@@ -20,6 +20,7 @@
     "pre-commit": "bun lint && bun run test && bun format"
   },
   "dependencies": {
+    "@radix-ui/react-tooltip": "^1.2.8",
     "electron-updater": "^6.8.3"
   },
   "devDependencies": {

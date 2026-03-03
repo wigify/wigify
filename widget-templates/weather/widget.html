@@ -1,25 +1,29 @@
 <div class="container">
   <div class="left">
-    <div class="temp">22<span>&deg;C</span></div>
-    <div class="condition">Partly Cloudy</div>
-    <div class="location">San Francisco</div>
+    <div class="temp" id="temp">--<span>&deg;C</span></div>
+    <div class="condition" id="condition">Loading...</div>
+    <div class="location" id="location"></div>
   </div>
-  <div class="center">
-    <div class="detail-item">
-      <span class="detail-label">Wind</span>
-      <span class="detail-value">12 km/h</span>
-    </div>
-    <div class="detail-item">
-      <span class="detail-label">Humidity</span>
-      <span class="detail-value">64%</span>
-    </div>
-    <div class="detail-item">
-      <span class="detail-label">UV</span>
-      <span class="detail-value">3</span>
-    </div>
-  </div>
-  <div class="icon-wrap">
+  <div class="icon-wrap" id="icon-wrap">
     <div class="sun"></div>
     <div class="cloud"></div>
+    <div class="rain">
+      <div class="rain-drop"></div>
+      <div class="rain-drop"></div>
+      <div class="rain-drop"></div>
+    </div>
+    <div class="snow">
+      <div class="snow-dot"></div>
+      <div class="snow-dot"></div>
+      <div class="snow-dot"></div>
+    </div>
+    <div class="fog">
+      <div class="fog-line"></div>
+      <div class="fog-line"></div>
+      <div class="fog-line"></div>
+    </div>
+    <svg class="bolt" viewBox="0 0 8 14">
+      <polygon points="5,0 0,8 4,8 3,14 8,5 4,5" />
+    </svg>
   </div>
 </div>
