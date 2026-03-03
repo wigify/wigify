@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="header">
+    <span class="label">Habits</span>
+    <span class="date-str" id="date-str">--</span>
+  </div>
+  <div class="habits" id="habits">
+    <div class="habit" data-key="exercise">
+      <button
+        class="check"
+        id="chk-exercise"
+        onclick="toggleHabit('exercise')"
+      ></button>
+      <div class="habit-info">
+        <span class="habit-name">Exercise</span>
+        <div class="dots" id="dots-exercise"></div>
+      </div>
+      <span class="streak" id="streak-exercise">0🔥</span>
+    </div>
+    <div class="habit" data-key="read">
+      <button
+        class="check"
+        id="chk-read"
+        onclick="toggleHabit('read')"
+      ></button>
+      <div class="habit-info">
+        <span class="habit-name">Read</span>
+        <div class="dots" id="dots-read"></div>
+      </div>
+      <span class="streak" id="streak-read">0🔥</span>
+    </div>
+    <div class="habit" data-key="water">
+      <button
+        class="check"
+        id="chk-water"
+        onclick="toggleHabit('water')"
+      ></button>
+      <div class="habit-info">
+        <span class="habit-name">Drink Water</span>
+        <div class="dots" id="dots-water"></div>
+      </div>
+      <span class="streak" id="streak-water">0🔥</span>
+    </div>
+    <div class="habit" data-key="meditate">
+      <button
+        class="check"
+        id="chk-meditate"
+        onclick="toggleHabit('meditate')"
+      ></button>
+      <div class="habit-info">
+        <span class="habit-name">Meditate</span>
+        <div class="dots" id="dots-meditate"></div>
+      </div>
+      <span class="streak" id="streak-meditate">0🔥</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: white;
+  background: rgb(26, 22, 18);
+  padding: 14px 18px;
+  overflow: hidden;
+  gap: 10px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.4;
+}
+.updated {
+  font-size: 10px;
+  opacity: 0.2;
+  font-variant-numeric: tabular-nums;
+}
+.pairs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+.pair {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.pair-name {
+  font-size: 13px;
+  opacity: 0.4;
+  font-weight: 400;
+}
+.pair-rate {
+  font-size: 20px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  color: #fbbf24;
+  letter-spacing: -0.5px;
+}
+.pair-rate.loading {
+  opacity: 0.15;
+  color: white;
+}

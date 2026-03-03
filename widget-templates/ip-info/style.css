@@ -1,0 +1,90 @@
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: white;
+  background: rgb(18, 24, 20);
+  padding: 14px 16px;
+  overflow: hidden;
+  gap: 8px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.4;
+}
+.vpn-badge {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  display: none;
+}
+.vpn-badge.visible {
+  display: block;
+}
+.ip-block {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  overflow: hidden;
+}
+.ip-addr {
+  font-size: 26px;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  color: #4ade80;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.ip-type {
+  font-size: 10px;
+  opacity: 0.25;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.info-label {
+  font-size: 10px;
+  opacity: 0.25;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  width: 32px;
+  flex-shrink: 0;
+}
+.info-value {
+  font-size: 13px;
+  font-weight: 400;
+  opacity: 0.65;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

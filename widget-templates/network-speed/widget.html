@@ -1,0 +1,35 @@
+<div class="container">
+  <div class="header">
+    <span class="label">Network</span>
+    <div class="status-dot" id="status-dot"></div>
+  </div>
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-icon">⬆</div>
+      <div class="metric-body">
+        <div class="metric-value" id="ping">--</div>
+        <div class="metric-unit">ms latency</div>
+      </div>
+      <div class="gauge-track">
+        <div class="gauge-fill ping-fill" id="bar-ping"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="metric">
+      <div class="metric-icon">⬇</div>
+      <div class="metric-body">
+        <div class="metric-value" id="dl">--</div>
+        <div class="metric-unit">Mbps download</div>
+      </div>
+      <div class="gauge-track">
+        <div class="gauge-fill" id="bar-dl"></div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="ip-row">
+      <div class="ip-icon">◎</div>
+      <div class="ip-value" id="ip">--</div>
+      <div class="ip-isp" id="isp">Checking...</div>
+    </div>
+  </div>
+</div>
