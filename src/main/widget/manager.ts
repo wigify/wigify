@@ -261,3 +261,64 @@ export function updateWidgetWindowSize(
     window.setBounds({ x: bounds.x, y: bounds.y, width, height });
   }
 }
+
+function isOnAnyDisplay(bounds: Electron.Rectangle): boolean {
+  const displays = screen.getAllDisplays();
+  const minVisible = 50;
+
+  return displays.some(display => {
+    const { x, y, width, height } = display.workArea;
+    const overlapX = Math.max(
+      0,
+      Math.min(bounds.x + bounds.width, x + width) - Math.max(bounds.x, x),
+    );
+    const overlapY = Math.max(
+      0,
+      Math.min(bounds.y + bounds.height, y + height) - Math.max(bounds.y, y),
+    );
+    return overlapX >= minVisible && overlapY >= minVisible;
+  });
+}
+
+function getNearestDisplayPosition(bounds: Electron.Rectangle): {
+  x: number;
+  y: number;
+} {
+  const display = screen.getDisplayNearestPoint({
+    x: bounds.x + Math.round(bounds.width / 2),
+    y: bounds.y + Math.round(bounds.height / 2),
+  });
+  const { workArea } = display;
+  const margin = 20;
+
+  return {
+    x: Math.min(
+      Math.max(bounds.x, workArea.x + margin),
+      workArea.x + workArea.width - bounds.width - margin,
+    ),
+    y: Math.min(
+      Math.max(bounds.y, workArea.y + margin),
+      workArea.y + workArea.height - bounds.height - margin,
+    ),
+  };
+}
+
+export async function revalidateWidgetPositions(): Promise<void> {
+  for (const [instanceId, window] of widgetWindows) {
+    if (window.isDestroyed()) continue;
+
+    const bounds = window.getBounds();
+    if (isOnAnyDisplay(bounds)) continue;
+
+    const corrected = getNearestDisplayPosition(bounds);
+    window.setBounds({
+      x: corrected.x,
+      y: corrected.y,
+      width: bounds.width,
+      height: bounds.height,
+    });
+    await updateWidgetInstance(instanceId, {
+      position: { x: corrected.x, y: corrected.y },
+    });
+  }
+}

@@ -1,4 +1,10 @@
-import { app, BrowserWindow, nativeImage } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  nativeImage,
+  powerMonitor,
+  screen,
+} from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -15,6 +21,7 @@ import {
   ensureConfigDirectories,
   getEnabledWidgetInstances,
   registerWidgetIpc,
+  revalidateWidgetPositions,
   setAppQuitting,
   spawnWidgetWindow,
 } from '@/main/widget';
@@ -82,6 +89,11 @@ async function initializeApp(): Promise<void> {
   }
 
   initAutoUpdater();
+
+  const revalidateDelay = () => setTimeout(revalidateWidgetPositions, 1000);
+  powerMonitor.on('resume', revalidateDelay);
+  screen.on('display-removed', revalidateDelay);
+  screen.on('display-metrics-changed', revalidateDelay);
 }
 
 app.on('before-quit', () => {

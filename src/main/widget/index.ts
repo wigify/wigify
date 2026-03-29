@@ -50,6 +50,7 @@ export {
   updateWidgetWindowSize,
   setWidgetsAlwaysOnTop,
   setAppQuitting,
+  revalidateWidgetPositions,
 } from '@/main/widget/manager';
 
 export { WidgetContext, useWidgetContext } from '@/main/widget/context';
