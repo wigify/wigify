@@ -108,7 +108,7 @@ describe('revalidateWidgetPositions', () => {
     });
     getAllWidgetWindows().set('widget-1', window as never);
 
-    vi.setSystemTime(9000);
+    vi.setSystemTime(10000);
     getAllDisplaysMock.mockReturnValue([
       { workArea: { x: 0, y: 0, width: 1920, height: 1080 } },
     ]);
