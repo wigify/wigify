@@ -235,21 +235,24 @@
               return;
             }
 
-            var original = scripts[index++];
+            var originalScript = scripts[index++];
             var fresh = document.createElement('script');
 
-            if (original.type) fresh.type = original.type;
-            if (original.src) {
+            if (originalScript.type) fresh.type = originalScript.type;
+            if (originalScript.src) {
               fresh.async = false;
               fresh.onload = next;
-              fresh.onerror = next;
-              fresh.src = original.src;
-              original.parentNode.replaceChild(fresh, original);
+              fresh.onerror = function () {
+                console.error('Failed to load widget script:', originalScript.src);
+                next();
+              };
+              fresh.src = originalScript.src;
+              originalScript.parentNode.replaceChild(fresh, originalScript);
               return;
             }
 
-            fresh.textContent = original.textContent;
-            original.parentNode.replaceChild(fresh, original);
+            fresh.textContent = originalScript.textContent;
+            originalScript.parentNode.replaceChild(fresh, originalScript);
             next();
           }
 
