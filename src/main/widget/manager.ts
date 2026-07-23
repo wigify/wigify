@@ -190,6 +190,13 @@ function stopHoverTracking(instanceId: string): void {
   hoveredWidgets.delete(instanceId);
 }
 
+export function minifyWidgetWindow(instanceId: string): void {
+	const window = widgetWindows.get(instanceId);
+	if (window && !window.isDestroyed()) {
+	  window.minimize();
+	}
+}
+
 export function closeWidgetWindow(instanceId: string): void {
   stopHoverTracking(instanceId);
   const window = widgetWindows.get(instanceId);

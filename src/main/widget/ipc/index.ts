@@ -36,6 +36,7 @@ import { arrangeAllWidgets, findNextGridPosition } from '@/main/widget/grid';
 import {
   closeAllWidgetWindows,
   closeWidgetWindow,
+	minifyWidgetWindow,
   spawnWidgetWindow,
 } from '@/main/widget/manager';
 
@@ -188,7 +189,15 @@ export function registerWidgetIpc(): void {
     },
   );
 
-  ipcMain.handle('widget:spawn-all', async (): Promise<void> => {
+	ipcMain.handle(
+		'widget:minify',
+		async (_, instanceId: string): Promise<void> => {
+			minifyWidgetWindow(instanceId);
+			await notifyWidgetChanged();
+		},
+	);
+
+	ipcMain.handle('widget:spawn-all', async (): Promise<void> => {
     const instances = await getEnabledWidgetInstances();
     for (const instance of instances) {
       await spawnWidgetWindow(instance);
