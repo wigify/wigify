@@ -43,6 +43,10 @@
         opacity: 1 !important;
         pointer-events: auto !important;
       }
+      .wigify-window-controls {
+        display: flex;
+        gap: 4px;
+      }
       .wigify-refresh-select {
         height: 20px !important;
         border-radius: 4px !important;
@@ -68,7 +72,7 @@
         background: #171717 !important;
         color: #fff !important;
       }
-      .wigify-close-btn {
+      .wigify-window-btn {
         width: 20px !important;
         height: 20px !important;
         border-radius: 4px !important;
@@ -86,7 +90,7 @@
           color 150ms ease,
           background-color 150ms ease;
       }
-      .wigify-close-btn:hover {
+      .wigify-window-btn:hover {
         border-color: rgba(255, 255, 255, 0.85) !important;
         color: rgba(255, 255, 255, 0.85) !important;
         background: rgba(255, 255, 255, 0.1) !important;
@@ -110,24 +114,48 @@
         <option value="1800000">30m</option>
         <option value="3600000">1h</option>
       </select>
-      <button
-        class="wigify-close-btn"
-        id="wigify-close"
-        aria-label="Close widget"
-      >
-        <svg
-          width="10"
-          height="10"
-          viewBox="0 0 10 10"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
+      <div class="wigify-window-controls">
+        <button
+          type="button"
+          class="wigify-window-btn"
+          id="wigify-minify"
+          aria-label="Minify widget"
         >
-          <line x1="2" y1="2" x2="8" y2="8" />
-          <line x1="8" y1="2" x2="2" y2="8" />
-        </svg>
-      </button>
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="10"
+            height="10"
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            stroke-width="2" 
+            stroke-linecap="round" 
+            stroke-linejoin="round" >
+            <path d="M5 12h14"/>
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="wigify-window-btn"
+          id="wigify-close"
+          aria-label="Close widget"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg" 
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          >
+            <line x1="2" y1="2" x2="8" y2="8" />
+            <line x1="8" y1="2" x2="2" y2="8" />
+          </svg>
+        </button>
+        
+      </div>
     </div>
     <script>
       (function () {
@@ -213,6 +241,7 @@
         });
 
         var titlebar = document.getElementById('wigify-titlebar');
+        var minifyBtn = document.getElementById('wigify-minify');
         var closeBtn = document.getElementById('wigify-close');
         var refreshSelect = document.getElementById('wigify-refresh');
         var refreshTimer = null;
@@ -283,6 +312,11 @@
               refreshInterval: ms,
             },
           );
+        });
+
+        minifyBtn.addEventListener('click', function () {
+          if (!payload) return;
+          window.ipcRenderer.invoke('widget:minify', payload.instanceId);
         });
 
         closeBtn.addEventListener('click', function () {
