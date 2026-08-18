@@ -255,6 +255,39 @@
           }, ms);
         }
 
+        function executeScriptsSequentially(scripts, done) {
+          var index = 0;
+
+          function next() {
+            if (index >= scripts.length) {
+              done();
+              return;
+            }
+
+            var originalScript = scripts[index++];
+            var fresh = document.createElement('script');
+
+            if (originalScript.type) fresh.type = originalScript.type;
+            if (originalScript.src) {
+              fresh.async = false;
+              fresh.onload = next;
+              fresh.onerror = function () {
+                console.error('Failed to load widget script:', originalScript.src);
+                next();
+              };
+              fresh.src = originalScript.src;
+              originalScript.parentNode.replaceChild(fresh, originalScript);
+              return;
+            }
+
+            fresh.textContent = originalScript.textContent;
+            originalScript.parentNode.replaceChild(fresh, originalScript);
+            next();
+          }
+
+          next();
+        }
+
         window.ipcRenderer.on('load', function (_, data) {
           if (data.type !== 'widget' || !data.payload) return;
           payload = data.payload;
@@ -274,23 +307,16 @@
           var html = source.html || '';
           document.body.insertAdjacentHTML('beforeend', html);
 
-          var inlineScripts = document.body.querySelectorAll('script');
-          inlineScripts.forEach(function (original) {
-            var fresh = document.createElement('script');
-            if (original.type) fresh.type = original.type;
-            if (original.src) {
-              fresh.src = original.src;
-            } else {
-              fresh.textContent = original.textContent;
-            }
-            original.parentNode.replaceChild(fresh, original);
-          });
+          var inlineScripts = Array.prototype.slice.call(
+            document.body.querySelectorAll('script'),
+          );
 
-          if (source.js) {
+          executeScriptsSequentially(inlineScripts, function () {
+            if (!source.js) return;
             var scriptEl = document.createElement('script');
             scriptEl.textContent = source.js;
             document.body.appendChild(scriptEl);
-          }
+          });
         });
 
         window.ipcRenderer.on('widget:hover', function (_, hovered) {
