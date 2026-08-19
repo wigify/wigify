@@ -15,11 +15,13 @@ import {
 } from '@/main/widget/fs';
 
 const HOVER_POLL_MS = 100;
+const DISPLAY_RECOVERY_GRACE_MS = 8000;
 const widgetWindows = new Map<string, Window>();
 const widgetPayloads = new Map<string, WindowData>();
 const hoverTimers = new Map<string, ReturnType<typeof setInterval>>();
 const hoveredWidgets = new Set<string>();
 let isAppQuitting = false;
+let lastKnownMultiDisplayAt = -1;
 
 export function setAppQuitting(): void {
   isAppQuitting = true;
@@ -311,6 +313,16 @@ function getNearestDisplayPosition(bounds: Electron.Rectangle): {
 }
 
 export async function revalidateWidgetPositions(): Promise<void> {
+  const displays = screen.getAllDisplays();
+  if (displays.length > 1) {
+    lastKnownMultiDisplayAt = Date.now();
+  } else if (
+    lastKnownMultiDisplayAt >= 0 &&
+    Date.now() - lastKnownMultiDisplayAt < DISPLAY_RECOVERY_GRACE_MS
+  ) {
+    return;
+  }
+
   for (const [instanceId, window] of widgetWindows) {
     if (window.isDestroyed()) continue;
 
